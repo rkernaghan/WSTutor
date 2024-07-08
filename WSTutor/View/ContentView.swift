@@ -27,15 +27,15 @@ struct ContentView: View {
         }
     }
     
-
     fileprivate func UserInfo() -> Text {
         return Text(vm.givenName)
     }
     
     var body: some View {
         VStack{
-            UserInfo()
+ //           UserInfo()
             if(vm.isLoggedIn){
+  
                 SignOutButton()
             }else{
                 SignInButton()

@@ -14,13 +14,11 @@ struct WSTutorApp: App {
    
     var body: some Scene {
         WindowGroup {
-            NavigationView{
+
                 ContentView()
             }
             .environmentObject(userAuth)
-            .navigationViewStyle(.stack)
-            
-        }
+        
     }
 }
 
