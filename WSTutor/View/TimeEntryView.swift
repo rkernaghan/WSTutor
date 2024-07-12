@@ -7,16 +7,30 @@
 
 import SwiftUI
 
+class TimesheetData {
+    var studentCount: Int
+    var serviceCount: Int
+    var students: [String] = []
+    var services: [String] = []
+    
+    init() {
+        studentCount = 0
+        serviceCount = 0
+        }
+    }
+
 struct TimeEntryView: View {
     @EnvironmentObject var vm: UserAuthModel
     @EnvironmentObject var ts: TimesheetModel
     @Environment(\.dismiss) var dismiss
     @AppStorage("username") var userName: String = "Tutor Name"
+    @State var selectedStudent:String
     
 //    var services = ["Tutoring", "Library Tutoring", "Virtual Call", "Thesis"]
 //    var students = ["Maria","Russell", "Alana", "Stephen" ]
 //    var selectedService: String
 //    var selectedStudent: String
+    var timesheetData = TimesheetData()
     
     var body: some View {
         VStack {
@@ -36,10 +50,10 @@ struct TimeEntryView: View {
             
             Spacer()
             
-            Picker(selection: /*@START_MENU_TOKEN@*/.constant(1)/*@END_MENU_TOKEN@*/, label: Text("Student")) {
-                Text("Student 1").tag(1)
-                Text("Student 2").tag(2)
-                Text("Student 3").tag(3)
+            Picker("Student", selection: $selectedStudent) {
+                ForEach(timesheetData.students, id: \.self) {
+                                Text($0)
+                            }
                 
             }
             Spacer()
@@ -52,7 +66,8 @@ struct TimeEntryView: View {
             DatePicker(selection: /*@START_MENU_TOKEN@*/.constant(Date())/*@END_MENU_TOKEN@*/, label: { /*@START_MENU_TOKEN@*/Text("Date")/*@END_MENU_TOKEN@*/ })
             Spacer()
             Button("Submit") {
-                /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Action@*/ /*@END_MENU_TOKEN@*/
+                ts.saveTimeEntry(spreadsheetID: "1DplB9gONhQK8aurzYyFoLtBZCsB0fh-yhTfGoV0w0TI", studentName: "Student 3", serviceName: "Tutoring", duration: "75", serviceDate: "7/12/2024")
+                
             }
             .border(/*@START_MENU_TOKEN@*/Color.black/*@END_MENU_TOKEN@*/, width: /*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
             
@@ -69,14 +84,20 @@ struct TimeEntryView: View {
         .padding(0.0)
         .frame(width: 340.0, height: 800.0)
         .onAppear(perform: {
-            let spreadsheetName = "Timesheet 2024 '\(userName)'"
-            readData(fileName: spreadsheetName)
+            let temp = userName
+            let spreadsheetName = "Timesheet 2024 " + userName
+            ts.readRefData(fileName: spreadsheetName, timesheetData: timesheetData)
+            print(timesheetData.studentCount)
+            print(timesheetData.serviceCount)
+            print(timesheetData.students)
+            print(timesheetData.services)
+            
         })
     }
 }
 
     
-#Preview {
-    TimeEntryView()
-}
+//#Preview {
+//    TimeEntryView()
+//}
 

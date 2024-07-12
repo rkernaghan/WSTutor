@@ -38,7 +38,7 @@ struct ContentView: View {
         VStack{
             
             if(vm.isLoggedIn){
-                TimeEntryView()
+                TimeEntryView(selectedStudent: "Student 3")
                     .environmentObject(ts)
                     .environmentObject(vm)
  

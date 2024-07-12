@@ -9,16 +9,8 @@ import Foundation
 import GoogleSignIn
 import GoogleAPIClientForREST
 
-struct TimesheetData {
-    var studentCount: Int
-    var serviceCount: Int
-    var students: [String] = []
-    var services: [String] = []
-    }
 
-func readData(fileName: String) {
-    
-    var timesheetData = TimesheetData(studentCount: 0, serviceCount: 0)
+func readData(fileName: String, timesheetData: TimesheetData) {
     
     print("Getting fileID for '\(fileName)'")
     
@@ -115,7 +107,7 @@ func readData(fileName: String) {
     
 //    let spreadsheetId = "18GxBUhOAG2arOR0YkTFcv546ujKZ_JyJYkhyawVSMiY"
 //    let spreadsheetID = "158rPsyfpFYBPBLsFtr8_E7dczSPcUH8zmdvBnFoqDxc"
-
+//    let spreadsheetID = "1DplB9gONhQK8aurzYyFoLtBZCsB0fh-yhTfGoV0w0TI"   Timesheet 2024 Tutor 2
   }
 
 

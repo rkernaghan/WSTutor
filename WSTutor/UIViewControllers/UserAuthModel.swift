@@ -67,7 +67,6 @@ class UserAuthModel: ObservableObject {
         }
     }
     
-    
 func getAuthScope( ) {
     
  //   let additionalScopes = ["https://www.googleapis.com/auth/drive.readonly"]
@@ -118,12 +117,12 @@ func getAuthScope( ) {
                         self.isLoggedIn = false
                     } else {
                         print("SignIn - got additional scope")
-                        readData(fileName: "Timesheet 2024 Tutor 2")
+  //                      readData(fileName: "Timesheet 2024 Tutor 2")
                         self.isLoggedIn = true
                     }
                 } else {
                     print("SignIn - already had scope")
-                    readData(fileName: "Timesheet 2024 Tutor 2")
+  //                  readData(fileName: "Timesheet 2024 Tutor 2")
                     
                     self.isLoggedIn = true
                 }
