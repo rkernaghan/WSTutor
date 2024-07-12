@@ -8,12 +8,19 @@
 import SwiftUI
 
 struct TimeEntryView: View {
- //   @EnvironmentObject var authViewModel: AuthenticationViewModel
+    @EnvironmentObject var vm: UserAuthModel
+    @EnvironmentObject var ts: TimesheetModel
     @Environment(\.dismiss) var dismiss
+    @AppStorage("username") var userName: String = "Tutor Name"
+    
+//    var services = ["Tutoring", "Library Tutoring", "Virtual Call", "Thesis"]
+//    var students = ["Maria","Russell", "Alana", "Stephen" ]
+//    var selectedService: String
+//    var selectedStudent: String
+    
     var body: some View {
         VStack {
 
-                         
             Spacer()
             Text("Write Seattle Timesheet")
                 .fontWeight(.black)
@@ -24,7 +31,7 @@ struct TimeEntryView: View {
             Spacer()
             
             Button("Sign Out") {
- //               authViewModel.signOut()
+                vm.signOut()
                 dismiss()}
             
             Spacer()
@@ -61,6 +68,10 @@ struct TimeEntryView: View {
         }
         .padding(0.0)
         .frame(width: 340.0, height: 800.0)
+        .onAppear(perform: {
+            let spreadsheetName = "Timesheet 2024 '\(userName)'"
+            readData(fileName: spreadsheetName)
+        })
     }
 }
 

@@ -11,13 +11,15 @@ import GoogleSignIn
 @main
 struct WSTutorApp: App {
     @StateObject var userAuth: UserAuthModel =  UserAuthModel()
-   
+    @StateObject var timeSheet: TimesheetModel =  TimesheetModel()
+    
     var body: some Scene {
         WindowGroup {
 
                 ContentView()
             }
             .environmentObject(userAuth)
+            .environmentObject(timeSheet)
         
     }
 }

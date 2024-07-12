@@ -11,8 +11,8 @@
 		022503642C2C8BDC0054C2FD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022503632C2C8BDC0054C2FD /* ContentView.swift */; };
 		022503662C2C8BDF0054C2FD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 022503652C2C8BDF0054C2FD /* Assets.xcassets */; };
 		022503692C2C8BDF0054C2FD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 022503682C2C8BDF0054C2FD /* Preview Assets.xcassets */; };
+		027666ED2C4041F80031B2AD /* TimesheetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027666EC2C4041F80031B2AD /* TimesheetModel.swift */; };
 		02B3550E2C339078008035E9 /* TimeSheetLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B3550D2C339078008035E9 /* TimeSheetLoader.swift */; };
-		02B355102C342BE9008035E9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 02B3550F2C342BE9008035E9 /* GoogleService-Info.plist */; };
 		02B7AB6E2C3063CD00D68E07 /* UserAuthModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B7AB6D2C3063CD00D68E07 /* UserAuthModel.swift */; };
 		02E1AFA72C2DF02100C43875 /* TimeEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E1AFA62C2DF02100C43875 /* TimeEntryView.swift */; };
 		02E1AFA92C2DF06E00C43875 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E1AFA82C2DF06E00C43875 /* SignInView.swift */; };
@@ -25,9 +25,9 @@
 		022503632C2C8BDC0054C2FD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		022503652C2C8BDF0054C2FD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		022503682C2C8BDF0054C2FD /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		027666EC2C4041F80031B2AD /* TimesheetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimesheetModel.swift; sourceTree = "<group>"; };
 		02B3550A2C310E4E008035E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		02B3550D2C339078008035E9 /* TimeSheetLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSheetLoader.swift; sourceTree = "<group>"; };
-		02B3550F2C342BE9008035E9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		02B355112C342BEF008035E9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		02B7AB6D2C3063CD00D68E07 /* UserAuthModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAuthModel.swift; sourceTree = "<group>"; };
 		02E1AFA62C2DF02100C43875 /* TimeEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeEntryView.swift; sourceTree = "<group>"; };
@@ -103,7 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				02B7AB6D2C3063CD00D68E07 /* UserAuthModel.swift */,
-				02B3550F2C342BE9008035E9 /* GoogleService-Info.plist */,
+				027666EC2C4041F80031B2AD /* TimesheetModel.swift */,
 			);
 			path = UIViewControllers;
 			sourceTree = "<group>";
@@ -204,7 +204,6 @@
 			files = (
 				022503692C2C8BDF0054C2FD /* Preview Assets.xcassets in Resources */,
 				022503662C2C8BDF0054C2FD /* Assets.xcassets in Resources */,
-				02B355102C342BE9008035E9 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,6 +256,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				027666ED2C4041F80031B2AD /* TimesheetModel.swift in Sources */,
 				022503642C2C8BDC0054C2FD /* ContentView.swift in Sources */,
 				02B7AB6E2C3063CD00D68E07 /* UserAuthModel.swift in Sources */,
 				02E1AFA72C2DF02100C43875 /* TimeEntryView.swift in Sources */,

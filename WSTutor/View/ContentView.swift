@@ -10,6 +10,9 @@ import GoogleSignIn
 
 struct ContentView: View {
     @EnvironmentObject var vm: UserAuthModel
+    @EnvironmentObject var ts: TimesheetModel
+    @AppStorage("username") var userName: String = "Tutor Name"
+    @State var userinput = " "
     
     fileprivate func SignInButton() -> Button<Text> {
         Button(action: {
@@ -33,12 +36,15 @@ struct ContentView: View {
     
     var body: some View {
         VStack{
- //           UserInfo()
+            
             if(vm.isLoggedIn){
-  
-                SignOutButton()
-            }else{
-                SignInButton()
+                TimeEntryView()
+                    .environmentObject(ts)
+                    .environmentObject(vm)
+ 
+ //               SignOutButton()
+            } else {
+                SignInView()
             }
             Text(vm.errorMessage)
         }.navigationTitle("Login")
