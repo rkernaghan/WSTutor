@@ -10,11 +10,11 @@ import SwiftUI
 import GoogleSignIn
 
 
-class UserAuthModel: ObservableObject {
+@Observable class UserAuthModel {
     
-    @Published var givenName: String = ""
-    @Published var isLoggedIn: Bool = false
-    @Published var errorMessage: String = ""
+    var givenName: String = ""
+    var isLoggedIn: Bool = false
+    var errorMessage: String = ""
     
     init() {
         check()

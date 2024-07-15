@@ -9,10 +9,13 @@ import SwiftUI
 import GoogleSignIn
 
 struct ContentView: View {
-    @EnvironmentObject var vm: UserAuthModel
-    @EnvironmentObject var ts: TimesheetModel
     @AppStorage("username") var userName: String = "Tutor Name"
     @State var userinput = " "
+//    @State var ts: TimesheetModel = TimesheetModel()
+//    @State var vm: UserAuthModel
+
+    let vm = UserAuthModel()
+    let ts = TimesheetModel()
     
     fileprivate func SignInButton() -> Button<Text> {
         Button(action: {
@@ -38,16 +41,18 @@ struct ContentView: View {
         VStack{
             
             if(vm.isLoggedIn){
-                TimeEntryView(selectedStudent: "Student 3")
-                    .environmentObject(ts)
-                    .environmentObject(vm)
+                TimeEntryView(selectedStudent: " ", selectedService: " ", serviceDate: Date.now, minutes: " ")
+ //               .environmentObject(vm)
  
  //               SignOutButton()
             } else {
                 SignInView()
             }
             Text(vm.errorMessage)
-        }.navigationTitle("Login")
+        }
+        .navigationTitle("Login")
+        .environment(ts)
+        .environment(vm)
     }
 }
 

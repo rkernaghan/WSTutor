@@ -10,11 +10,11 @@ import SwiftUI
 import GoogleSignIn
 import GoogleAPIClientForREST
 
-final class TimesheetModel: ObservableObject {
+@Observable class TimesheetModel  {
     
-    @Published var isDataLoaded: Bool
-    @Published var services: [String] = []
-    @Published var students: [String] = []
+    var isDataLoaded: Bool
+    var services: [String] = []
+    var students: [String] = []
     var serviceCount: Int
     var studentCount: Int
     var fileID: String
