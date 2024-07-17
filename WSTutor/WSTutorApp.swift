@@ -8,6 +8,9 @@
 import SwiftUI
 import GoogleSignIn
 
+let monthNames = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"]
+let firstTimesheetRow = 5
+
 @main
 struct WSTutorApp: App {
     @State var userAuth: UserAuthModel =  UserAuthModel()

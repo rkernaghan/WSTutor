@@ -8,37 +8,45 @@
 import SwiftUI
 
 class TimesheetData {
+    var fileID: String
     var studentCount: Int
     var serviceCount: Int
+    var sessionCount: Int
     var students: [String] = []
     var services: [String] = []
+    var sessions = [TimesheetRow] ()
     
     init() {
         studentCount = 0
         serviceCount = 0
+        sessionCount = 0
+        fileID = " "
+    
         }
     }
 
+struct TimesheetRow: Identifiable {
+    let sessionDate: String
+    let sessionMinutes: String
+    let sessionStudent: String
+    let sessionService: String
+    
+    var id = UUID()
+}
+
 struct TimeEntryView: View {
-  //  @State var vm: UserAuthModel
-    @Environment(\.dismiss) var dismiss
     @AppStorage("username") var userName: String = "Tutor Name"
+    
+    @Environment(\.dismiss) var dismiss
     @Environment(UserAuthModel.self) var userAuthModel: UserAuthModel
     @Environment(TimesheetModel.self) var timesheetModel: TimesheetModel
+
     @State var selectedStudent: String
     @State var selectedService: String
     @State var serviceDate: Date
     @State var minutes: String
-    
- //   @State private var ts: TimesheetModel
 
-    
-//    var services = ["Tutoring", "Library Tutoring", "Virtual Call", "Thesis"]
-//    var students = ["Maria","Russell", "Alana", "Stephen" ]
-//    var selectedService: String
-//    var selectedStudent: String
     var timesheetData = TimesheetData()
-//    @State var duration: String
     
     var body: some View {
         VStack {
@@ -90,18 +98,35 @@ struct TimeEntryView: View {
                     let formatter1 = DateFormatter()
                     formatter1.dateStyle = .short
                     let stringDate = formatter1.string(from: serviceDate)
-                    timesheetModel.saveTimeEntry(spreadsheetID: "1DplB9gONhQK8aurzYyFoLtBZCsB0fh-yhTfGoV0w0TI", studentName: selectedStudent, serviceName: selectedService, duration: minutes, serviceDate: stringDate)
+                    timesheetModel.saveTimeEntry(spreadsheetID: timesheetData.fileID, studentName: selectedStudent, serviceName: selectedService, duration: minutes, serviceDate: stringDate, sessionCount: timesheetData.sessionCount)
                     
                 }
                 .border(/*@START_MENU_TOKEN@*/Color.black/*@END_MENU_TOKEN@*/, width: /*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
                 
                 Spacer()
                 List {
-                    Text("Student Date Service")
-                    Text("Student Date Service")
-                    Text("Student Date Service")
-                    Text("Student Date Service")
-                }.frame(width: 300, height: 180.0)
+                            Grid {
+                                GridRow {
+                                    Text("Date")
+                                    Text("Minutes")
+                                    Text("Student")
+                                    Text("Service")
+                                }
+                                .bold()
+                                Divider()
+                                ForEach(timesheetData.sessions) { timesheet in
+                                    GridRow {
+                                        Text(timesheet.sessionDate)
+                                        Text(timesheet.sessionMinutes)
+                                        Text(timesheet.sessionStudent)
+                                        Text(timesheet.sessionService)
+                                    }
+ //                                   if timesheet != timesheetData.sessions.last {
+ //                                       Divider()
+ //                                   }
+                                }
+                            }
+                        }
                 
                 Spacer()
             }
@@ -109,9 +134,21 @@ struct TimeEntryView: View {
         .padding(0.0)
         .frame(width: 340.0, height: 800.0)
         .onAppear(perform: {
-            let temp = userName
-            let spreadsheetName = "Timesheet 2024 " + userName
-            timesheetModel.readRefData(fileName: spreadsheetName, timesheetData: timesheetData)
+            
+            let currentDate = Date.now
+            let formatter1 = DateFormatter()
+            formatter1.dateFormat = "M"
+            let currentMonth = formatter1.string(from: currentDate)
+            let currentMonthNum = Int(currentMonth)
+            let currentMonthName = monthNames[currentMonthNum! - 1]
+            formatter1.dateFormat = "yyyy"
+            let currentYear = formatter1.string(from: currentDate)
+            let spreadsheetName = "Timesheet " + currentYear + " " + userName
+            print(spreadsheetName, currentMonthName)
+            timesheetModel.readRefData(fileName: spreadsheetName, timesheetData: timesheetData, spreadsheetYear: currentYear, spreadsheetMonth: currentMonthName)
+            
+ //           timesheetModel.readMonthTimesheets(spreadsheetID: timesheetData.fileID, spreadsheetYear: currentYear, spreadsheetMonth: currentMonthName, timesheetData: timesheetData)
+            
             print(timesheetData.studentCount)
             print(timesheetData.serviceCount)
             print(timesheetData.students)

@@ -30,7 +30,7 @@ struct SignInView: View {
                 .font(.title)
                 .background(.yellow)
                 .disableAutocorrection(true)
-                .onChange(of: userinput) {text in
+                .onChange(of: userinput) {
                     self.userName = userinput
                 }
                 .onAppear {
