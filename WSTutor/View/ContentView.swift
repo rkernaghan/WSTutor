@@ -40,9 +40,10 @@ struct ContentView: View {
     var body: some View {
         VStack{
             
-            if(vm.isLoggedIn){
+            if (vm.isLoggedIn) {
                 TimeEntryView(selectedStudent: " ", selectedService: " ", serviceDate: Date.now, minutes: " ")
- //               .environmentObject(vm)
+  //                .environment(vm)
+                
  
  //               SignOutButton()
             } else {
@@ -54,6 +55,10 @@ struct ContentView: View {
         .environment(ts)
         .environment(vm)
     }
+}
+
+#Preview {
+    ContentView()
 }
 
 

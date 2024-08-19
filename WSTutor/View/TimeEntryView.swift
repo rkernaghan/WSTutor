@@ -55,6 +55,7 @@ struct TimeEntryView: View {
                 Text("Write Seattle Timesheet")
                     .fontWeight(.black)
                     .foregroundColor(Color.black)
+                    .multilineTextAlignment(.center)
                 
                 Image("Write_Seattle_Logo").resizable().frame(width: 50.0, height: 50.0)
                 
@@ -65,74 +66,99 @@ struct TimeEntryView: View {
                     dismiss()}
                 
                 Spacer()
-                
-                Picker("Student", selection: $selectedStudent) {
-                    ForEach(timesheetData.students, id: \.self) {
-                        Text($0)
+ //               List {
+                    Section {
+         
+                    
+                    Picker("Student", selection: $selectedStudent) {
+                        ForEach(timesheetData.students, id: \.self) {
+                            Text($0)
+                        }
                     }
                     
-                }
-                Spacer()
-                Picker("Service", selection: $selectedService) {
-                    ForEach(timesheetData.services, id: \.self) {
-                        Text($0)
+                    Spacer()
+                    
+                    Picker("Service", selection: $selectedService) {
+                        ForEach(timesheetData.services, id: \.self) {
+                            Text($0)
+                        }
                     }
                     
-                }
-                
-                TextField("Duration (minutes)",text: $minutes)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                
-                Spacer()
-                
-                DatePicker(
+                    Spacer()
+
+                    HStack {
+                        Text("Duration")
+                        TextField("Duration", text: $minutes)
+                            .frame(width: 60)
+                            .textFieldStyle(.roundedBorder)
+                            .keyboardType(.numberPad)
+                        }
+                    
+                    Spacer()
+                    
+                    DatePicker(
                         "Service Date",
                         selection: $serviceDate,
                         displayedComponents: [.date]
                     )
-                
-                Spacer()
-                
-                Button("Submit") {
                     
-                    let formatter1 = DateFormatter()
-                    formatter1.dateStyle = .short
-                    let stringDate = formatter1.string(from: serviceDate)
-                    timesheetModel.saveTimeEntry(spreadsheetID: timesheetData.fileID, studentName: selectedStudent, serviceName: selectedService, duration: minutes, serviceDate: stringDate, sessionCount: timesheetData.sessionCount)
-                    
-                }
-                .border(/*@START_MENU_TOKEN@*/Color.black/*@END_MENU_TOKEN@*/, width: /*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
-                
-                Spacer()
-                List {
-                            Grid {
-                                GridRow {
-                                    Text("Date")
-                                    Text("Minutes")
-                                    Text("Student")
-                                    Text("Service")
-                                }
-                                .bold()
-                                Divider()
-                                ForEach(timesheetData.sessions) { timesheet in
-                                    GridRow {
-                                        Text(timesheet.sessionDate)
-                                        Text(timesheet.sessionMinutes)
-                                        Text(timesheet.sessionStudent)
-                                        Text(timesheet.sessionService)
-                                    }
- //                                   if timesheet != timesheetData.sessions.last {
- //                                       Divider()
- //                                   }
-                                }
-                            }
+                    Spacer()
+                        
+                    }
+                    Section {
+                        Button("Submit") {
+                            
+                            let formatter1 = DateFormatter()
+                            formatter1.dateStyle = .short
+                            let stringDate = formatter1.string(from: serviceDate)
+                            timesheetModel.saveTimeEntry(spreadsheetID: timesheetData.fileID, studentName: selectedStudent, serviceName: selectedService, duration: minutes, serviceDate: stringDate, sessionCount: timesheetData.sessionCount)
+                            
+                            let currentDate = Date.now
+                            
+                            formatter1.dateFormat = "yyyy"
+                            let currentYear = formatter1.string(from: currentDate)
+                            formatter1.dateFormat = "M"
+                            let currentMonth = formatter1.string(from: currentDate)
+                            let currentMonthNum = Int(currentMonth)
+                            let currentMonthName = monthNames[currentMonthNum! - 1]
+                            timesheetModel.loadMonthSessions(timesheetData: timesheetData, spreadsheetYear: currentYear, spreadsheetMonth: currentMonthName)
                         }
-                
-                Spacer()
+                        
+                        
+                        Spacer()
+                    }
+                    Section  {
+                        Grid {
+                            GridRow {
+                                Text("Date")
+                                Text("Minutes")
+                                Text("Student")
+                                Text("Service")
+                            }
+                            .bold()
+                            Divider()
+                            ForEach(timesheetData.sessions) { timesheet in
+                                GridRow {
+                                    Text(timesheet.sessionDate)
+                                    Text(timesheet.sessionMinutes)
+                                    Text(timesheet.sessionStudent)
+                                    Text(timesheet.sessionService)
+                                }
+//                                   if timesheet != timesheetData.sessions.last {
+//                                       Divider()
+//                                   }
+                            }
+//                        }
+                    }
+                    
+                    
+                    Spacer()
+                }
             }
         }
         .padding(0.0)
-        .frame(width: 340.0, height: 800.0)
+        .background(Color.gray)
+//        .frame(width: 340.0, height: 800.0)
         .onAppear(perform: {
             
             let currentDate = Date.now
@@ -147,8 +173,6 @@ struct TimeEntryView: View {
             print(spreadsheetName, currentMonthName)
             timesheetModel.readRefData(fileName: spreadsheetName, timesheetData: timesheetData, spreadsheetYear: currentYear, spreadsheetMonth: currentMonthName)
             
- //           timesheetModel.readMonthTimesheets(spreadsheetID: timesheetData.fileID, spreadsheetYear: currentYear, spreadsheetMonth: currentMonthName, timesheetData: timesheetData)
-            
             print(timesheetData.studentCount)
             print(timesheetData.serviceCount)
             print(timesheetData.students)
@@ -159,7 +183,7 @@ struct TimeEntryView: View {
 }
 
     
-//#Preview {
-//    TimeEntryView()
-//}
+#Preview {
+    TimeEntryView(selectedStudent: " ", selectedService: " ", serviceDate: Date.now, minutes: " ")
+}
 

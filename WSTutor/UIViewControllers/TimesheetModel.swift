@@ -43,141 +43,175 @@ import GoogleAPIClientForREST
         let dquery = GTLRDriveQuery_FilesList.query()
         dquery.pageSize = 100
         
-        let root = "name = '\(fileName)' and mimeType = 'application/vnd.google-apps.spreadsheet'"
+        let root = "name = '\(fileName)' and mimeType = 'application/vnd.google-apps.spreadsheet' and trashed=false"
         dquery.q = root
         dquery.spaces = "drive"
         dquery.corpora = "user"
         dquery.fields = "files(id,name),nextPageToken"
-//        var ssID: String?
         
         driveService.executeQuery(dquery, completionHandler: {(ticket, files, error) in
             if let filesList : GTLRDrive_FileList = files as? GTLRDrive_FileList {
+                
                 if let filesShow : [GTLRDrive_File] = filesList.files {
-                    //             print("files \(filesShow)")
-                    for ArrayList in filesShow {
-                        let name = ArrayList.name ?? ""
-                        timesheetData.fileID = ArrayList.identifier ?? ""
+                    var fileCount = filesShow.count
+                    switch fileCount {
+                    case 0:
+                        print("Tutor timesheet file not found - '\(fileName)")
+                        GIDSignIn.sharedInstance.signOut()
+//                        isLoggedIn = false
+                    case 1:
+                        let name = filesShow[0].name ?? ""
+                        timesheetData.fileID = filesShow[0].identifier ?? ""
                         print(name, timesheetData.fileID)
+                        self.loadStudentsServices(timesheetData: timesheetData, spreadsheetYear: spreadsheetYear, spreadsheetMonth: spreadsheetMonth)
+                    default:
+                        print("Error: more than one tutor timesheet for '\(fileName)")
+                        GIDSignIn.sharedInstance.signOut()
+ //                       isLoggedIn = false
                     }
-                    //              let t = type(of: fileID)
-                    //              print("'\(fileID)' of type '\(t)'")
-                    //              let spreadsheetID = "1DplB9gONhQK8aurzYyFoLtBZCsB0fh-yhTfGoV0w0TI"
-//                    let spreadsheetID = ssID!
-                    let range = "RefData!A5:K32"
-                    let query = GTLRSheetsQuery_SpreadsheetsValuesGet
-                        .query(withSpreadsheetId: timesheetData.fileID, range:range)
+                    //                 print("files \(filesShow)")
+                    //                  for ArrayList in filesShow {
+                    //                      let name = ArrayList.name ?? ""
+                    //                      timesheetData.fileID = ArrayList.identifier ?? ""
+                    //                      print(name, timesheetData.fileID)
+                    //                  }
                     
-                    sheetService.executeQuery(query) { (ticket, result, error) in
-                        if let error = error {
-                            print(error)
-                            print("Failed to read data:\(error.localizedDescription)")
-                            return
-                        }
-                        guard let result = result as? GTLRSheets_ValueRange else {
-                            return
-                        }
-                        
-                        let rows = result.values!
-                        var stringRows = rows as! [[String]]
-                        
-                        for row in stringRows {
-                            stringRows.append(row)
-                            print(row)
-                        }
-                        
-                        if rows.isEmpty {
-                            print("No data found.")
-                            return
-                        }
-                        
-                        print("Success!")
-                        print("Student count is '\(rows[0][1])")
-                        print("Service count is '\(rows[1][1])")
-                        print("Service 1 is '\(rows[2][3])")
-                        print("Student 1 is '\(rows[2][10])")
-                        print("Number of rows in sheet: \(rows.count)")
-                        timesheetData.studentCount = Int(stringRows[0][1])! ?? 0
-                        timesheetData.serviceCount = Int(stringRows[1][1])! ?? 0
-                        
-                        var studentIndex = 0
-                        var rowNumber = 2
-                        while studentIndex < timesheetData.studentCount {
-                            timesheetData.students.insert(stringRows[rowNumber][10], at: studentIndex)
-                            studentIndex += 1
-                            rowNumber += 1
-                        }
-                        
-                        var serviceIndex = 0
-                        rowNumber = 2
-                        while serviceIndex < timesheetData.serviceCount {
-                            timesheetData.services.insert(stringRows[rowNumber][3], at: serviceIndex)
-                            serviceIndex += 1
-                            rowNumber += 1
-                        }
-                        
-                        let cellRange = spreadsheetMonth + "!A3:D100"
-                        print(cellRange)
-                        
-                        print(timesheetData.fileID)
-                        let query = GTLRSheetsQuery_SpreadsheetsValuesGet
-                            .query(withSpreadsheetId: timesheetData.fileID, range:cellRange)
-                        
-                        sheetService.executeQuery(query) { (ticket, result, error) in
-                            if let error = error {
-                                print(error)
-                                print("Failed to read timesheet sessions:\(error.localizedDescription)")
-                                return
-                            }
-                            guard let result = result as? GTLRSheets_ValueRange else {
-                                return
-                            }
-                            
-                            let rows = result.values!
-                            var stringRows = rows as! [[String]]
-                            
-                            for row in stringRows {
-                                stringRows.append(row)
-                                print(row)
-                            }
-                            
-                            if rows.isEmpty {
-                                print("No data found.")
-                                return
-                            }
-                            
-                            print("Success!")
-                            timesheetData.sessionCount = Int(stringRows[0][1])! ?? 0
-                            print("Session count is '\(rows[0][1])")
-                            print("Session student 1 is '\(rows[2][0])")
-                            print("timesheet data session count is '\(timesheetData.sessionCount)")
-                            
-                            var sessionIndex = 0
-                            var rowNumber = 2
-                            
-                            while sessionIndex < timesheetData.sessionCount {
-                                var session = TimesheetRow(sessionDate: stringRows[rowNumber][1], sessionMinutes: stringRows[rowNumber][2], sessionStudent: stringRows[rowNumber][0], sessionService: stringRows[rowNumber][3])
-                                print(session)
-                                timesheetData.sessions.insert(session, at: sessionIndex)
-                                sessionIndex += 1
-                                rowNumber += 1
-                            }
-                            print(timesheetData.sessions)
-                            
-                            self.isDataLoaded = true
-                            print("Data Loaded")
-                        }
- 
-                    }
+                    
                     
                 } else {
                     print("no files returned")
                 }
-                return
             }
+            else {
+                    print("error no files returned from Drive search call")
+                    return
+                }
+            
         })
     }
     
    
+    func loadStudentsServices(timesheetData: TimesheetData, spreadsheetYear: String, spreadsheetMonth: String)  {
+        let sheetService = GTLRSheetsService()
+        let currentUser = GIDSignIn.sharedInstance.currentUser
+        sheetService.authorizer = currentUser?.fetcherAuthorizer
+        
+        let range = "RefData!A5:K32"
+        let query = GTLRSheetsQuery_SpreadsheetsValuesGet
+            .query(withSpreadsheetId: timesheetData.fileID, range:range)
+        
+        sheetService.executeQuery(query) { (ticket, result, error) in
+            if let error = error {
+                print(error)
+                print("Failed to read data:\(error.localizedDescription)")
+                return
+            }
+            guard let result = result as? GTLRSheets_ValueRange else {
+                return
+            }
+            
+            let rows = result.values!
+            var stringRows = rows as! [[String]]
+            
+            for row in stringRows {
+                stringRows.append(row)
+                print(row)
+            }
+            
+            if rows.isEmpty {
+                print("No data found.")
+                return
+            }
+            
+            print("Student count is '\(rows[0][1])")
+            print("Service count is '\(rows[1][1])")
+            print("Service 1 is '\(rows[2][3])")
+            print("Student 1 is '\(rows[2][10])")
+            print("Number of rows in sheet: \(rows.count)")
+            timesheetData.studentCount = Int(stringRows[0][1])! ?? 0
+            timesheetData.serviceCount = Int(stringRows[1][1])! ?? 0
+            
+            var studentIndex = 0
+            var rowNumber = 2
+            while studentIndex < timesheetData.studentCount {
+                timesheetData.students.insert(stringRows[rowNumber][10], at: studentIndex)
+                studentIndex += 1
+                rowNumber += 1
+            }
+            
+            var serviceIndex = 0
+            rowNumber = 2
+            while serviceIndex < timesheetData.serviceCount {
+                timesheetData.services.insert(stringRows[rowNumber][3], at: serviceIndex)
+                serviceIndex += 1
+                rowNumber += 1
+            }
+            self.loadMonthSessions(timesheetData: timesheetData, spreadsheetYear: spreadsheetYear, spreadsheetMonth: spreadsheetMonth)
+        }
+        
+    }
+
+    func loadMonthSessions(timesheetData: TimesheetData, spreadsheetYear: String, spreadsheetMonth: String) {
+
+        let sheetService = GTLRSheetsService()
+        let currentUser = GIDSignIn.sharedInstance.currentUser
+        sheetService.authorizer = currentUser?.fetcherAuthorizer
+
+        let cellRange = spreadsheetMonth + "!A3:D100"
+        print(cellRange)
+        
+        print(timesheetData.fileID)
+        let query = GTLRSheetsQuery_SpreadsheetsValuesGet
+            .query(withSpreadsheetId: timesheetData.fileID, range:cellRange)
+        
+        sheetService.executeQuery(query) { (ticket, result, error) in
+            if let error = error {
+                print(error)
+                print("Failed to read timesheet sessions:\(error.localizedDescription)")
+                return
+            }
+            guard let result = result as? GTLRSheets_ValueRange else {
+                return
+            }
+            
+            let rows = result.values!
+            var stringRows = rows as! [[String]]
+            
+            for row in stringRows {
+                stringRows.append(row)
+                print(row)
+            }
+            
+            if rows.isEmpty {
+                print("No data found.")
+                return
+            }
+            
+            timesheetData.sessionCount = Int(stringRows[0][1])! ?? 0
+            print("Session count is '\(rows[0][1])")
+            print("Session student 1 is '\(rows[2][0])")
+            print("timesheet data session count is '\(timesheetData.sessionCount)")
+            
+// Empty the array before reading in existing timesheet entries for the month
+            timesheetData.sessions.removeAll()
+            
+            var sessionIndex = 0
+            var rowNumber = 2
+            
+            while sessionIndex < timesheetData.sessionCount {
+                var session = TimesheetRow(sessionDate: stringRows[rowNumber][1], sessionMinutes: stringRows[rowNumber][2], sessionStudent: stringRows[rowNumber][0], sessionService: stringRows[rowNumber][3])
+                print(session)
+                timesheetData.sessions.insert(session, at: sessionIndex)
+                sessionIndex += 1
+                rowNumber += 1
+            }
+            print(timesheetData.sessions)
+            
+            self.isDataLoaded = true
+            print("Data Loaded")
+        }
+    }
+    
     func saveTimeEntry(spreadsheetID: String, studentName: String, serviceName: String, duration: String, serviceDate: String, sessionCount: Int) {
         
         let sheetService = GTLRSheetsService()

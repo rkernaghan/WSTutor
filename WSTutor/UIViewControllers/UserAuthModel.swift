@@ -20,8 +20,8 @@ import GoogleSignIn
         check()
     }
     
-    func checkStatus(){
-        if(GIDSignIn.sharedInstance.currentUser != nil){
+    func checkStatus() {
+        if (GIDSignIn.sharedInstance.currentUser != nil) {
             let user = GIDSignIn.sharedInstance.currentUser
             guard let user = user else {
                 return }
@@ -37,7 +37,7 @@ import GoogleSignIn
         }
     }
     
-    func check(){
+    func check() {
         GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
             if let error = error {
                 self.errorMessage = "error: \(error.localizedDescription)"
@@ -135,8 +135,9 @@ func getAuthScope( ) {
   //              readData()
             }
         
-    func signOut(){
+    func signOut() {
         GIDSignIn.sharedInstance.signOut()
+        isLoggedIn = false
         self.checkStatus()
     }
 }

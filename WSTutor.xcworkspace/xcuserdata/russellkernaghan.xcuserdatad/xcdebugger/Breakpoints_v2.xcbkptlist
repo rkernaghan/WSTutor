@@ -3,4 +3,22 @@
    uuid = "E6FE7130-9C57-4CA4-AFC4-8F51BF006DB4"
    type = "0"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "054B0CD2-7FE3-4DCE-B556-E3FED9777B71"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "WSTutor/UIViewControllers/TimesheetModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
+            landmarkName = "readRefData(fileName:timesheetData:spreadsheetYear:spreadsheetMonth:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>
