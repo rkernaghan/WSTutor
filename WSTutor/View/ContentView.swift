@@ -42,6 +42,7 @@ struct ContentView: View {
             
             if (vm.isLoggedIn) {
                 TimeEntryView(selectedStudent: " ", selectedService: " ", serviceDate: Date.now, minutes: " ")
+ //               TimeEntryView()
   //                .environment(vm)
                 
  
