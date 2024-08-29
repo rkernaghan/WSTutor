@@ -13,20 +13,9 @@ import GoogleAPIClientForREST
 @Observable class TimesheetModel  {
     
     var isDataLoaded: Bool
-//    var services: [String] = []
-//    var students: [String] = []
-//    var serviceCount: Int
-//    var studentCount: Int
-//    var sessionCount: Int
-//    var fileID: String
-    
-    
+        
     init() {
-//        fileID = " "
         isDataLoaded = false
-//        serviceCount = 0
-//        studentCount = 0
-//        sessionCount = 0
     }
     
     func readRefData(fileName: String, timesheetData: TimesheetData, spreadsheetYear: String, spreadsheetMonth: String) {
@@ -48,17 +37,16 @@ import GoogleAPIClientForREST
         dquery.spaces = "drive"
         dquery.corpora = "user"
         dquery.fields = "files(id,name),nextPageToken"
-        
+// Retreive all files with Tutor timesheet name (should only be one)
         driveService.executeQuery(dquery, completionHandler: {(ticket, files, error) in
             if let filesList : GTLRDrive_FileList = files as? GTLRDrive_FileList {
                 
                 if let filesShow : [GTLRDrive_File] = filesList.files {
-                    var fileCount = filesShow.count
+                    let fileCount = filesShow.count
                     switch fileCount {
                     case 0:
                         print("Tutor timesheet file not found - '\(fileName)")
                         GIDSignIn.sharedInstance.signOut()
-//                        isLoggedIn = false
                     case 1:
                         let name = filesShow[0].name ?? ""
                         timesheetData.fileID = filesShow[0].identifier ?? ""
@@ -67,17 +55,7 @@ import GoogleAPIClientForREST
                     default:
                         print("Error: more than one tutor timesheet for '\(fileName)")
                         GIDSignIn.sharedInstance.signOut()
- //                       isLoggedIn = false
                     }
-                    //                 print("files \(filesShow)")
-                    //                  for ArrayList in filesShow {
-                    //                      let name = ArrayList.name ?? ""
-                    //                      timesheetData.fileID = ArrayList.identifier ?? ""
-                    //                      print(name, timesheetData.fileID)
-                    //                  }
-                    
-                    
-                    
                 } else {
                     print("no files returned")
                 }
@@ -92,14 +70,15 @@ import GoogleAPIClientForREST
     
    
     func loadStudentsServices(timesheetData: TimesheetData, spreadsheetYear: String, spreadsheetMonth: String)  {
+        
         let sheetService = GTLRSheetsService()
         let currentUser = GIDSignIn.sharedInstance.currentUser
         sheetService.authorizer = currentUser?.fetcherAuthorizer
         
-        let range = "RefData!A5:K32"
+        let range = "RefData!A5:P32"
         let query = GTLRSheetsQuery_SpreadsheetsValuesGet
             .query(withSpreadsheetId: timesheetData.fileID, range:range)
-        
+// Load RefData data for Tutor
         sheetService.executeQuery(query) { (ticket, result, error) in
             if let error = error {
                 print(error)
@@ -125,13 +104,17 @@ import GoogleAPIClientForREST
             
             print("Student count is '\(rows[0][1])")
             print("Service count is '\(rows[1][1])")
+            print("Notes count is '\(rows[2][1])")
+            
             print("Service 1 is '\(rows[2][3])")
             print("Student 1 is '\(rows[2][10])")
             print("Number of rows in sheet: \(rows.count)")
             timesheetData.studentCount = Int(stringRows[0][1])! ?? 0
             timesheetData.serviceCount = Int(stringRows[1][1])! ?? 0
+            timesheetData.notesCount = Int(stringRows[2][1])! ?? 0
             
-            var studentIndex = 0
+            timesheetData.students.insert("Choose Student", at: 0)
+            var studentIndex = 1
             var rowNumber = 2
             while studentIndex < timesheetData.studentCount {
                 timesheetData.students.insert(stringRows[rowNumber][10], at: studentIndex)
@@ -139,13 +122,24 @@ import GoogleAPIClientForREST
                 rowNumber += 1
             }
             
-            var serviceIndex = 0
+            timesheetData.services.insert("Choose Service", at: 0)
+            var serviceIndex = 1
             rowNumber = 2
             while serviceIndex < timesheetData.serviceCount {
                 timesheetData.services.insert(stringRows[rowNumber][3], at: serviceIndex)
                 serviceIndex += 1
                 rowNumber += 1
             }
+            
+            timesheetData.notes.insert("Choose Note", at: 0)
+            var noteIndex = 1
+            rowNumber = 0
+            while noteIndex <= timesheetData.notesCount {
+                timesheetData.notes.insert(stringRows[rowNumber][15], at: noteIndex)
+                noteIndex += 1
+                rowNumber += 1
+            }
+
             self.loadMonthSessions(timesheetData: timesheetData, spreadsheetYear: spreadsheetYear, spreadsheetMonth: spreadsheetMonth)
         }
         
@@ -197,8 +191,17 @@ import GoogleAPIClientForREST
             
             var sessionIndex = 0
             var rowNumber = 2
+            var loadCount: Int
             
-            while sessionIndex < timesheetData.sessionCount {
+  //          if timesheetData.sessionCount > 3 {
+  //              loadCount = 3
+  //          }
+  //          else {
+                loadCount = timesheetData.sessionCount
+  //          }
+            print(loadCount)
+            
+            while sessionIndex < loadCount {
                 var session = TimesheetRow(sessionDate: stringRows[rowNumber][1], sessionMinutes: stringRows[rowNumber][2], sessionStudent: stringRows[rowNumber][0], sessionService: stringRows[rowNumber][3])
                 print(session)
                 timesheetData.sessions.insert(session, at: sessionIndex)
@@ -212,7 +215,16 @@ import GoogleAPIClientForREST
         }
     }
     
-    func saveTimeEntry(spreadsheetID: String, studentName: String, serviceName: String, duration: String, serviceDate: String, sessionCount: Int) {
+    func saveTimeEntry(spreadsheetID: String, studentName: String, serviceName: String, duration: String, serviceDate: Date, sessionCount: Int) {
+        
+        let formatter1 = DateFormatter()
+        formatter1.dateStyle = .short
+        let stringDate = formatter1.string(from: serviceDate)
+        
+        let monthNum = Calendar.current.component(.month, from: serviceDate)
+        print(monthNum)
+        let monthName = monthNames[monthNum-1]
+        print(monthName)
         
         let sheetService = GTLRSheetsService()
         let currentUser = GIDSignIn.sharedInstance.currentUser
@@ -222,9 +234,10 @@ import GoogleAPIClientForREST
         let newRow = firstTimesheetRow + sessionCount
         print("New row", newRow)
         let newRowString = String(newRow)
-        let range = "July!A" + newRowString + ":D" + newRowString
+        let range = monthName + "!A" + newRowString + ":D" + newRowString
         print("Range", range)
-        let updateValues = [[studentName, serviceDate, duration, serviceName]]
+ //       let updateValues = [[studentName, serviceDate, duration, serviceName]]
+        let updateValues = [[studentName, stringDate, duration, serviceName]]
         let valueRange = GTLRSheets_ValueRange() // GTLRSheets_ValueRange holds the updated values and other params
         valueRange.majorDimension = "ROWS" // Indicates horizontal row insert
         valueRange.range = range

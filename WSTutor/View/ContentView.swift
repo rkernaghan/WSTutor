@@ -41,7 +41,7 @@ struct ContentView: View {
         VStack{
             
             if (vm.isLoggedIn) {
-                TimeEntryView(selectedStudent: " ", selectedService: " ", serviceDate: Date.now, minutes: " ")
+                TimeEntryView(selectedStudent: "Choose Student", selectedService: "Choose Service", serviceDate: Date.now, minutes: " ")
  //               TimeEntryView()
   //                .environment(vm)
                 
