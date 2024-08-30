@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class TimesheetData {
+@Observable class TimesheetData {
     var fileID: String
     var studentCount: Int
     var serviceCount: Int
@@ -73,7 +73,7 @@ struct TimeEntryView: View {
                 
                 Spacer()
                 
-                SubmitButtonView(selectedStudent: $selectedStudent, selectedService: $selectedService, serviceDate: $serviceDate, minutes: $minutes, timesheetData: timesheetData)
+                SubmitButtonView(selectedStudent: $selectedStudent, selectedService: $selectedService, serviceDate: $serviceDate, minutes: $minutes, selectedNote: $selectedNote, timesheetData: timesheetData)
                     .environment(timesheetModel)
                 
                 Spacer()
@@ -201,6 +201,7 @@ struct SubmitButtonView: View {
     @Binding var selectedService: String
     @Binding var serviceDate: Date
     @Binding var minutes: String
+    @Binding var selectedNote: String
     var timesheetData: TimesheetData
     
     @Environment(TimesheetModel.self) var timesheetModel: TimesheetModel
@@ -211,8 +212,10 @@ struct SubmitButtonView: View {
             let formatter1 = DateFormatter()
             formatter1.dateStyle = .short
             let stringDate = formatter1.string(from: serviceDate)
-            timesheetModel.saveTimeEntry(spreadsheetID: timesheetData.fileID, studentName: selectedStudent, serviceName: selectedService, duration: minutes, serviceDate: serviceDate, sessionCount: timesheetData.sessionCount)
+//            timesheetModel.saveTimeEntry(spreadsheetID: timesheetData.fileID, studentName: selectedStudent, serviceName: selectedService, duration: minutes, serviceDate: serviceDate, note: selectedNote, sessionCount: timesheetData.sessionCount)
 //            timesheetModel.saveTimeEntry(spreadsheetID: timesheetData.fileID, studentName: selectedStudent, serviceName: selectedService, duration: "15", serviceDate: serviceDate, sessionCount: timesheetData.sessionCount)
+            timesheetModel.saveTimeEntry(timesheetData: timesheetData, studentName: selectedStudent, serviceName: selectedService, duration: minutes, serviceDate: serviceDate, note: selectedNote)
+
   
             let currentDate = Date.now
             

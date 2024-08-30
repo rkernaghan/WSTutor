@@ -17,7 +17,11 @@ import GoogleAPIClientForREST
     init() {
         isDataLoaded = false
     }
-    
+//
+// This function loads the Tutor's reference data from their RefDaTa sheet.
+// 1) Call Google Drive to search for for the Tutor's timesheet file name in order to get the file's Google File ID
+// 2) If only a single file is retreived, call loadStudentServices to retrieve the Tutor's assigned Student list, Services list and Notes options as well as the Tutor service history for the month
+//
     func readRefData(fileName: String, timesheetData: TimesheetData, spreadsheetYear: String, spreadsheetMonth: String) {
         
         print("Getting fileID for '\(fileName)'")
@@ -64,7 +68,6 @@ import GoogleAPIClientForREST
                     print("error no files returned from Drive search call")
                     return
                 }
-            
         })
     }
     
@@ -112,25 +115,28 @@ import GoogleAPIClientForREST
             timesheetData.studentCount = Int(stringRows[0][1])! ?? 0
             timesheetData.serviceCount = Int(stringRows[1][1])! ?? 0
             timesheetData.notesCount = Int(stringRows[2][1])! ?? 0
-            
+
+// Load the Tutor's assigned Services
             timesheetData.students.insert("Choose Student", at: 0)
             var studentIndex = 1
             var rowNumber = 2
-            while studentIndex < timesheetData.studentCount {
+            while studentIndex <= timesheetData.studentCount {
                 timesheetData.students.insert(stringRows[rowNumber][10], at: studentIndex)
                 studentIndex += 1
                 rowNumber += 1
             }
-            
+
+// Load the Tutor's assigned Services
             timesheetData.services.insert("Choose Service", at: 0)
             var serviceIndex = 1
             rowNumber = 2
-            while serviceIndex < timesheetData.serviceCount {
+            while serviceIndex <= timesheetData.serviceCount {
                 timesheetData.services.insert(stringRows[rowNumber][3], at: serviceIndex)
                 serviceIndex += 1
                 rowNumber += 1
             }
             
+// Load the Tutor's Notes options
             timesheetData.notes.insert("Choose Note", at: 0)
             var noteIndex = 1
             rowNumber = 0
@@ -139,12 +145,14 @@ import GoogleAPIClientForREST
                 noteIndex += 1
                 rowNumber += 1
             }
-
+            
+// Load the Tutor's service session history
             self.loadMonthSessions(timesheetData: timesheetData, spreadsheetYear: spreadsheetYear, spreadsheetMonth: spreadsheetMonth)
         }
         
     }
 
+// Load the Tutor's service session history for the month
     func loadMonthSessions(timesheetData: TimesheetData, spreadsheetYear: String, spreadsheetMonth: String) {
 
         let sheetService = GTLRSheetsService()
@@ -152,9 +160,9 @@ import GoogleAPIClientForREST
         sheetService.authorizer = currentUser?.fetcherAuthorizer
 
         let cellRange = spreadsheetMonth + "!A3:D100"
-        print(cellRange)
+//        print(cellRange)
         
-        print(timesheetData.fileID)
+//        print(timesheetData.fileID)
         let query = GTLRSheetsQuery_SpreadsheetsValuesGet
             .query(withSpreadsheetId: timesheetData.fileID, range:cellRange)
         
@@ -180,7 +188,7 @@ import GoogleAPIClientForREST
                 print("No data found.")
                 return
             }
-            
+// Load the count of service sessions from the Tutor's Timesheet
             timesheetData.sessionCount = Int(stringRows[0][1])! ?? 0
             print("Session count is '\(rows[0][1])")
             print("Session student 1 is '\(rows[2][0])")
@@ -200,7 +208,7 @@ import GoogleAPIClientForREST
                 loadCount = timesheetData.sessionCount
   //          }
             print(loadCount)
-            
+// Load the service sessions from the Tutor's timesheet
             while sessionIndex < loadCount {
                 var session = TimesheetRow(sessionDate: stringRows[rowNumber][1], sessionMinutes: stringRows[rowNumber][2], sessionStudent: stringRows[rowNumber][0], sessionService: stringRows[rowNumber][3])
                 print(session)
@@ -208,14 +216,17 @@ import GoogleAPIClientForREST
                 sessionIndex += 1
                 rowNumber += 1
             }
-            print(timesheetData.sessions)
-            
+//            print(timesheetData.sessions)
+//
             self.isDataLoaded = true
             print("Data Loaded")
         }
     }
     
-    func saveTimeEntry(spreadsheetID: String, studentName: String, serviceName: String, duration: String, serviceDate: Date, sessionCount: Int) {
+    func saveTimeEntry(timesheetData: TimesheetData, studentName: String, serviceName: String, duration: String, serviceDate: Date, note: String) {
+        
+        let spreadsheetID = timesheetData.fileID
+        let sessionCount = timesheetData.sessionCount
         
         let formatter1 = DateFormatter()
         formatter1.dateStyle = .short
@@ -234,10 +245,10 @@ import GoogleAPIClientForREST
         let newRow = firstTimesheetRow + sessionCount
         print("New row", newRow)
         let newRowString = String(newRow)
-        let range = monthName + "!A" + newRowString + ":D" + newRowString
+        let range = monthName + "!A" + newRowString + ":E" + newRowString
         print("Range", range)
  //       let updateValues = [[studentName, serviceDate, duration, serviceName]]
-        let updateValues = [[studentName, stringDate, duration, serviceName]]
+        let updateValues = [[studentName, stringDate, duration, serviceName, note]]
         let valueRange = GTLRSheets_ValueRange() // GTLRSheets_ValueRange holds the updated values and other params
         valueRange.majorDimension = "ROWS" // Indicates horizontal row insert
         valueRange.range = range
@@ -247,8 +258,23 @@ import GoogleAPIClientForREST
         sheetService.executeQuery(query) { ticket, object, error in
             if let error = error {
                 print(error)
-                print("Failed to read data:\(error.localizedDescription)")
+                print("Failed to save data:\(error.localizedDescription)")
                 return
+            }
+            else {
+                print("service entry saved")
+
+                let currentDate = Date.now
+                let formatter1 = DateFormatter()
+                formatter1.dateFormat = "M"
+                let currentMonth = formatter1.string(from: currentDate)
+                let currentMonthNum = Int(currentMonth)
+                let currentMonthName = monthNames[currentMonthNum! - 1]
+                formatter1.dateFormat = "yyyy"
+                let spreadsheetYear = formatter1.string(from: currentDate)
+ 
+                self.loadMonthSessions(timesheetData: timesheetData, spreadsheetYear: spreadsheetYear, spreadsheetMonth: currentMonthName)
+                print("reloaded month sessions after Save")
             }
         }
     }
