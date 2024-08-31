@@ -302,10 +302,12 @@ import GoogleAPIClientForREST
             validationResult = false
         }
         
- //       if (duration < 1) || (duration > 240) {
- //           print ("invalid duration")
- //           validationResult = false
- //       }
+        let minutes = Int( duration.trimmingCharacters(in: .whitespacesAndNewlines) ) ?? 0
+        if (minutes < 1) || (minutes > 240) {
+            print ("invalid duration")
+            submitErrorMsg += "Error: Invalid duration"
+            validationResult = false
+        }
         
         return(validationResult)
         

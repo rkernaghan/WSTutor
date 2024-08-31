@@ -39,7 +39,7 @@ struct ContentView: View {
         VStack{
             
             if (vm.isLoggedIn) {
-                TimeEntryView(selectedStudent: PgmConstants.studentPrompt, selectedService: PgmConstants.servicePrompt, selectedNote: PgmConstants.notePrompt, serviceDate: Date.now, minutes: " ")
+                TimeEntryView(selectedStudent: PgmConstants.studentPrompt, selectedService: PgmConstants.servicePrompt, selectedNote: PgmConstants.notePrompt, serviceDate: Date.now, minutes: "0")
  
  //               SignOutButton()
             } else {
