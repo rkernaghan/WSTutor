@@ -47,11 +47,12 @@ struct TimeEntryView: View {
     @State var selectedStudent: String = " "
     @State var selectedService: String = " "
     @State var selectedNote: String = " "
-    
     @State var serviceDate: Date
     @State var minutes: String
 
     var timesheetData = TimesheetData()
+ 
+    @State var errorMsg: String = " "
     
     var body: some View {
         
@@ -78,6 +79,8 @@ struct TimeEntryView: View {
                 
                 Spacer()
                 
+                Text(errorMsg)
+                
                 SessionHistoryView(timesheetData: timesheetData)
                 
                 Spacer()
@@ -92,7 +95,7 @@ struct TimeEntryView: View {
                 formatter1.dateFormat = "M"
                 let currentMonth = formatter1.string(from: currentDate)
                 let currentMonthNum = Int(currentMonth)
-                let currentMonthName = monthNames[currentMonthNum! - 1]
+                let currentMonthName = PgmConstants.monthNames[currentMonthNum! - 1]
                 formatter1.dateFormat = "yyyy"
                 let currentYear = formatter1.string(from: currentDate)
                 let spreadsheetName = "Timesheet " + currentYear + " " + userName
@@ -144,8 +147,6 @@ struct StudentServicePickerView: View {
                     Text($0)
                 }
             }
-        
- //           Spacer()
         
             Picker("Service", selection: $selectedService) {
                 ForEach(timesheetData.services, id: \.self) {
@@ -205,27 +206,39 @@ struct SubmitButtonView: View {
     var timesheetData: TimesheetData
     
     @Environment(TimesheetModel.self) var timesheetModel: TimesheetModel
+    @State private var showAlert = false
     
     var body: some View {
 
         Button("Submit") {
-            let formatter1 = DateFormatter()
-            formatter1.dateStyle = .short
-            let stringDate = formatter1.string(from: serviceDate)
-//            timesheetModel.saveTimeEntry(spreadsheetID: timesheetData.fileID, studentName: selectedStudent, serviceName: selectedService, duration: minutes, serviceDate: serviceDate, note: selectedNote, sessionCount: timesheetData.sessionCount)
-//            timesheetModel.saveTimeEntry(spreadsheetID: timesheetData.fileID, studentName: selectedStudent, serviceName: selectedService, duration: "15", serviceDate: serviceDate, sessionCount: timesheetData.sessionCount)
-            timesheetModel.saveTimeEntry(timesheetData: timesheetData, studentName: selectedStudent, serviceName: selectedService, duration: minutes, serviceDate: serviceDate, note: selectedNote)
 
-  
-            let currentDate = Date.now
             
-            formatter1.dateFormat = "yyyy"
-            let currentYear = formatter1.string(from: currentDate)
-            formatter1.dateFormat = "M"
-            let currentMonth = formatter1.string(from: currentDate)
-            let currentMonthNum = Int(currentMonth)
-            let currentMonthName = monthNames[currentMonthNum! - 1]
-            timesheetModel.loadMonthSessions(timesheetData: timesheetData, spreadsheetYear: currentYear, spreadsheetMonth: currentMonthName)
+            let validationResult = timesheetModel.validateTimesheetInput(selectedStudent: selectedStudent, selectedService: selectedService, selectedNote: selectedNote, duration: minutes, serviceDate: serviceDate)
+            
+            if validationResult == true {
+                
+                timesheetModel.saveTimeEntry(timesheetData: timesheetData, studentName: selectedStudent, serviceName: selectedService, duration: minutes, serviceDate: serviceDate, note: selectedNote)
+                
+                let formatter1 = DateFormatter()
+                formatter1.dateStyle = .short
+                let currentDate = Date.now
+                formatter1.dateFormat = "yyyy"
+                let currentYear = formatter1.string(from: currentDate)
+                formatter1.dateFormat = "M"
+                let currentMonth = formatter1.string(from: currentDate)
+                let currentMonthNum = Int(currentMonth)
+                let currentMonthName = PgmConstants.monthNames[currentMonthNum! - 1]
+                timesheetModel.loadMonthSessions(timesheetData: timesheetData, spreadsheetYear: currentYear, spreadsheetMonth: currentMonthName)
+            }
+            else {
+                
+                showAlert = true
+                
+                }
+            }
+            .alert(submitErrorMsg, isPresented: $showAlert) {
+                Button("OK", role: .cancel) { }
+
         }
     }
 }
@@ -255,6 +268,7 @@ struct SessionHistoryView: View {
                 }
             }
         }
+        .frame(height: 150)
     }
 }
 

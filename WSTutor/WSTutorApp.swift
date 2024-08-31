@@ -8,8 +8,14 @@
 import SwiftUI
 import GoogleSignIn
 
-let monthNames = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"]
-let firstTimesheetRow = 5
+struct PgmConstants {
+    static let monthNames = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"]
+    static let firstTimesheetRow = 5
+    static let servicePrompt = "Choose Service"
+    static let studentPrompt = "Choose Student"
+    static let notePrompt = "Choose Note"
+}
+var submitErrorMsg: String = " "
 
 @main
 struct WSTutorApp: App {
@@ -21,9 +27,6 @@ struct WSTutorApp: App {
 
                 ContentView()
             }
- //           .environmentObject(userAuth)
- //           .environmentObject(timeSheet)
-        
     }
 }
 

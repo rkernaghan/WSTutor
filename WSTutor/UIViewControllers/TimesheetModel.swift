@@ -97,7 +97,7 @@ import GoogleAPIClientForREST
             
             for row in stringRows {
                 stringRows.append(row)
-                print(row)
+ //               print(row)
             }
             
             if rows.isEmpty {
@@ -109,15 +109,15 @@ import GoogleAPIClientForREST
             print("Service count is '\(rows[1][1])")
             print("Notes count is '\(rows[2][1])")
             
-            print("Service 1 is '\(rows[2][3])")
-            print("Student 1 is '\(rows[2][10])")
+ //           print("Service 1 is '\(rows[2][3])")
+ //           print("Student 1 is '\(rows[2][10])")
             print("Number of rows in sheet: \(rows.count)")
             timesheetData.studentCount = Int(stringRows[0][1])! ?? 0
             timesheetData.serviceCount = Int(stringRows[1][1])! ?? 0
             timesheetData.notesCount = Int(stringRows[2][1])! ?? 0
 
 // Load the Tutor's assigned Services
-            timesheetData.students.insert("Choose Student", at: 0)
+            timesheetData.students.insert(PgmConstants.studentPrompt, at: 0)
             var studentIndex = 1
             var rowNumber = 2
             while studentIndex <= timesheetData.studentCount {
@@ -127,7 +127,7 @@ import GoogleAPIClientForREST
             }
 
 // Load the Tutor's assigned Services
-            timesheetData.services.insert("Choose Service", at: 0)
+            timesheetData.services.insert(PgmConstants.servicePrompt, at: 0)
             var serviceIndex = 1
             rowNumber = 2
             while serviceIndex <= timesheetData.serviceCount {
@@ -137,7 +137,7 @@ import GoogleAPIClientForREST
             }
             
 // Load the Tutor's Notes options
-            timesheetData.notes.insert("Choose Note", at: 0)
+            timesheetData.notes.insert(PgmConstants.notePrompt, at: 0)
             var noteIndex = 1
             rowNumber = 0
             while noteIndex <= timesheetData.notesCount {
@@ -181,7 +181,7 @@ import GoogleAPIClientForREST
             
             for row in stringRows {
                 stringRows.append(row)
-                print(row)
+ //               print(row)
             }
             
             if rows.isEmpty {
@@ -211,7 +211,7 @@ import GoogleAPIClientForREST
 // Load the service sessions from the Tutor's timesheet
             while sessionIndex < loadCount {
                 var session = TimesheetRow(sessionDate: stringRows[rowNumber][1], sessionMinutes: stringRows[rowNumber][2], sessionStudent: stringRows[rowNumber][0], sessionService: stringRows[rowNumber][3])
-                print(session)
+ //               print(session)
                 timesheetData.sessions.insert(session, at: sessionIndex)
                 sessionIndex += 1
                 rowNumber += 1
@@ -219,7 +219,7 @@ import GoogleAPIClientForREST
 //            print(timesheetData.sessions)
 //
             self.isDataLoaded = true
-            print("Data Loaded")
+            print("Session Data Loaded")
         }
     }
     
@@ -234,7 +234,7 @@ import GoogleAPIClientForREST
         
         let monthNum = Calendar.current.component(.month, from: serviceDate)
         print(monthNum)
-        let monthName = monthNames[monthNum-1]
+        let monthName = PgmConstants.monthNames[monthNum-1]
         print(monthName)
         
         let sheetService = GTLRSheetsService()
@@ -242,7 +242,7 @@ import GoogleAPIClientForREST
         
         sheetService.authorizer = currentUser?.fetcherAuthorizer
             
-        let newRow = firstTimesheetRow + sessionCount
+        let newRow = PgmConstants.firstTimesheetRow + sessionCount
         print("New row", newRow)
         let newRowString = String(newRow)
         let range = monthName + "!A" + newRowString + ":E" + newRowString
@@ -269,7 +269,7 @@ import GoogleAPIClientForREST
                 formatter1.dateFormat = "M"
                 let currentMonth = formatter1.string(from: currentDate)
                 let currentMonthNum = Int(currentMonth)
-                let currentMonthName = monthNames[currentMonthNum! - 1]
+                let currentMonthName = PgmConstants.monthNames[currentMonthNum! - 1]
                 formatter1.dateFormat = "yyyy"
                 let spreadsheetYear = formatter1.string(from: currentDate)
  
@@ -278,6 +278,40 @@ import GoogleAPIClientForREST
             }
         }
     }
+    
+    func validateTimesheetInput(selectedStudent: String, selectedService: String, selectedNote: String, duration: String, serviceDate: Date) -> Bool {
+        
+        var validationResult = true
+        submitErrorMsg = " "
+        
+        if selectedStudent == PgmConstants.studentPrompt {
+            print("Student not selected")
+            submitErrorMsg += "Error: Student not selected \n"
+            validationResult = false
+        }
+        
+        if selectedService == PgmConstants.servicePrompt {
+            print("Service not selected")
+            submitErrorMsg += "Error: Service not selected \n"
+            validationResult = false
+        }
+        
+        if selectedNote == PgmConstants.notePrompt {
+            print ("Note not selected")
+            submitErrorMsg += "Error: Note not selected \n"
+            validationResult = false
+        }
+        
+ //       if (duration < 1) || (duration > 240) {
+ //           print ("invalid duration")
+ //           validationResult = false
+ //       }
+        
+        return(validationResult)
+        
+        }
+    
+
 }
     
 

@@ -11,8 +11,6 @@ import GoogleSignIn
 struct ContentView: View {
     @AppStorage("username") var userName: String = "Tutor Name"
     @State var userinput = " "
-//    @State var ts: TimesheetModel = TimesheetModel()
-//    @State var vm: UserAuthModel
 
     let vm = UserAuthModel()
     let ts = TimesheetModel()
@@ -41,10 +39,7 @@ struct ContentView: View {
         VStack{
             
             if (vm.isLoggedIn) {
-                TimeEntryView(selectedStudent: "Choose Student", selectedService: "Choose Service", serviceDate: Date.now, minutes: " ")
- //               TimeEntryView()
-  //                .environment(vm)
-                
+                TimeEntryView(selectedStudent: PgmConstants.studentPrompt, selectedService: PgmConstants.servicePrompt, selectedNote: PgmConstants.notePrompt, serviceDate: Date.now, minutes: " ")
  
  //               SignOutButton()
             } else {
