@@ -116,7 +116,10 @@ import GoogleAPIClientForREST
             timesheetData.serviceCount = Int(stringRows[1][1])! ?? 0
             timesheetData.notesCount = Int(stringRows[2][1])! ?? 0
 
+            
 // Load the Tutor's assigned Services
+            timesheetData.students.removeAll()          // empty the array before loading as this could be a refresh
+            
             timesheetData.students.insert(PgmConstants.studentPrompt, at: 0)
             var studentIndex = 1
             var rowNumber = 2
@@ -126,7 +129,8 @@ import GoogleAPIClientForREST
                 rowNumber += 1
             }
 
-// Load the Tutor's assigned Services
+// Load the Tutor's assigned Services                   // empty the array before loading as this could be a refresh
+            timesheetData.services.removeAll()
             timesheetData.services.insert(PgmConstants.servicePrompt, at: 0)
             var serviceIndex = 1
             rowNumber = 2
@@ -137,6 +141,7 @@ import GoogleAPIClientForREST
             }
             
 // Load the Tutor's Notes options
+            timesheetData.notes.removeAll()             // empty the array before loading as this could be a refresh
             timesheetData.notes.insert(PgmConstants.notePrompt, at: 0)
             var noteIndex = 1
             rowNumber = 0

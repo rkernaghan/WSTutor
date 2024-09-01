@@ -58,7 +58,10 @@ struct TimeEntryView: View {
         
         VStack {
             if timesheetModel.isDataLoaded {
-                TimesheetHeaderView()
+                
+                TimesheetHeaderView(userName: userName, timesheetData: timesheetData, selectedStudent: $selectedStudent, selectedService: $selectedService, selectedNote: $selectedNote)
+                    .environment(timesheetModel)
+                
                 Spacer()
                     
                 StudentServicePickerView(selectedStudent: $selectedStudent, selectedService: $selectedService, selectedNote: $selectedNote, timesheetData: timesheetData)
@@ -81,26 +84,31 @@ struct TimeEntryView: View {
                 
                 Text(errorMsg)
                 
+                Divider()
+                    .frame(height: 10)
+                    .overlay(.orange)
+                
                 SessionHistoryView(timesheetData: timesheetData)
                 
                 Spacer()
                 
             }
         }
+        .border(.orange, width: 8)
             
-            .onAppear(perform: {
-                print("Start OnAppear")
-                let currentDate = Date.now
-                let formatter1 = DateFormatter()
-                formatter1.dateFormat = "M"
-                let currentMonth = formatter1.string(from: currentDate)
-                let currentMonthNum = Int(currentMonth)
-                let currentMonthName = PgmConstants.monthNames[currentMonthNum! - 1]
-                formatter1.dateFormat = "yyyy"
-                let currentYear = formatter1.string(from: currentDate)
-                let spreadsheetName = "Timesheet " + currentYear + " " + userName
-                print(spreadsheetName, currentMonthName)
-                timesheetModel.readRefData(fileName: spreadsheetName, timesheetData: timesheetData, spreadsheetYear: currentYear, spreadsheetMonth: currentMonthName)
+        .onAppear(perform: {
+            print("Start OnAppear")
+            let currentDate = Date.now
+            let formatter1 = DateFormatter()
+            formatter1.dateFormat = "M"
+            let currentMonth = formatter1.string(from: currentDate)
+            let currentMonthNum = Int(currentMonth)
+            let currentMonthName = PgmConstants.monthNames[currentMonthNum! - 1]
+            formatter1.dateFormat = "yyyy"
+            let currentYear = formatter1.string(from: currentDate)
+            let spreadsheetName = "Timesheet " + currentYear + " " + userName
+            print(spreadsheetName, currentMonthName)
+            timesheetModel.readRefData(fileName: spreadsheetName, timesheetData: timesheetData, spreadsheetYear: currentYear, spreadsheetMonth: currentMonthName)
             })
         }
     }
@@ -108,8 +116,15 @@ struct TimeEntryView: View {
 
 
 struct TimesheetHeaderView: View {
+    var userName: String
+    var timesheetData: TimesheetData
+    @Binding var selectedStudent: String
+    @Binding var selectedService: String
+    @Binding var selectedNote: String
+    
     @Environment(\.dismiss) var dismiss
     @Environment(UserAuthModel.self) var userAuthModel: UserAuthModel
+    @Environment(TimesheetModel.self) var timesheetModel: TimesheetModel
     
     var body: some View {
         HStack {
@@ -120,13 +135,46 @@ struct TimesheetHeaderView: View {
                 .multilineTextAlignment(.center)
         }
         
-    
-          
         Spacer()
-        
-        Button("Sign Out") {
-            userAuthModel.signOut()
-            dismiss() }
+       
+        HStack {
+                     
+            Button(action: {
+                selectedStudent = PgmConstants.studentPrompt
+                selectedService = PgmConstants.servicePrompt
+                selectedNote = PgmConstants.notePrompt
+                
+                let currentDate = Date.now
+                let formatter1 = DateFormatter()
+                formatter1.dateFormat = "M"
+                let currentMonth = formatter1.string(from: currentDate)
+                let currentMonthNum = Int(currentMonth)
+                let currentMonthName = PgmConstants.monthNames[currentMonthNum! - 1]
+                formatter1.dateFormat = "yyyy"
+                let currentYear = formatter1.string(from: currentDate)
+                let spreadsheetName = "Timesheet " + currentYear + " " + userName
+                timesheetModel.readRefData(fileName: spreadsheetName, timesheetData: timesheetData, spreadsheetYear: currentYear, spreadsheetMonth: currentMonthName)
+            }){
+                Text("Refresh")
+            }
+            .padding()
+            .background(Color.orange)
+            .foregroundColor(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+
+            Spacer()
+            
+            Button(action: {
+                userAuthModel.signOut()
+                dismiss() }) {
+                    Text("Sign Out")
+                }
+                .padding()
+                .background(Color.orange)
+                .foregroundColor(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+
+        }
         Spacer()
     }
 }
@@ -210,9 +258,7 @@ struct SubmitButtonView: View {
     
     var body: some View {
 
-        Button("Submit") {
-
-            
+        Button(action: {
             let validationResult = timesheetModel.validateTimesheetInput(selectedStudent: selectedStudent, selectedService: selectedService, selectedNote: selectedNote, duration: minutes, serviceDate: serviceDate)
             
             if validationResult == true {
@@ -235,13 +281,20 @@ struct SubmitButtonView: View {
                 showAlert = true
                 
                 }
-            }
-            .alert(submitErrorMsg, isPresented: $showAlert) {
-                Button("OK", role: .cancel) { }
+        }) {
+            Text("Submit")
+        }
+        .alert(submitErrorMsg, isPresented: $showAlert) {
+            Button("OK", role: .cancel) { }
+        }
+        .padding()
+        .background(Color.orange)
+        .foregroundColor(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
 
         }
     }
-}
+
 
 struct SessionHistoryView: View {
     var timesheetData: TimesheetData
@@ -273,7 +326,7 @@ struct SessionHistoryView: View {
 }
 
 #Preview {
-    TimeEntryView(selectedStudent: " ", selectedService: " ", serviceDate: Date.now, minutes: " ")
+    TimeEntryView(selectedStudent: PgmConstants.studentPrompt, selectedService: PgmConstants.servicePrompt, selectedNote: PgmConstants.notePrompt, serviceDate: Date.now, minutes: " ")
 //    TimeEntryView()
 }
 
