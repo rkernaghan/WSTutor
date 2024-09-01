@@ -62,7 +62,7 @@ struct TimeEntryView: View {
                 TimesheetHeaderView(userName: userName, timesheetData: timesheetData, selectedStudent: $selectedStudent, selectedService: $selectedService, selectedNote: $selectedNote)
                     .environment(timesheetModel)
                 
-                Spacer()
+ //               Spacer()
                     
                 StudentServicePickerView(selectedStudent: $selectedStudent, selectedService: $selectedService, selectedNote: $selectedNote, timesheetData: timesheetData)
                     
@@ -82,7 +82,7 @@ struct TimeEntryView: View {
                 
                 Spacer()
                 
-                Text(errorMsg)
+  //              Text(errorMsg)
                 
                 Divider()
                     .frame(height: 10)
@@ -108,12 +108,11 @@ struct TimeEntryView: View {
             let currentYear = formatter1.string(from: currentDate)
             let spreadsheetName = "Timesheet " + currentYear + " " + userName
             print(spreadsheetName, currentMonthName)
+            
             timesheetModel.readRefData(fileName: spreadsheetName, timesheetData: timesheetData, spreadsheetYear: currentYear, spreadsheetMonth: currentMonthName)
             })
         }
     }
- 
-
 
 struct TimesheetHeaderView: View {
     var userName: String
@@ -195,18 +194,21 @@ struct StudentServicePickerView: View {
                     Text($0)
                 }
             }
+            .accentColor(Color.black)
         
             Picker("Service", selection: $selectedService) {
                 ForEach(timesheetData.services, id: \.self) {
                     Text($0)
                 }
             }
+            .accentColor(Color.black)
             
             Picker("Note", selection: $selectedNote) {
                 ForEach(timesheetData.notes, id: \.self) {
                     Text($0)
                 }
             }
+            .accentColor(Color.black)
         }
     }
 }
@@ -277,9 +279,7 @@ struct SubmitButtonView: View {
                 timesheetModel.loadMonthSessions(timesheetData: timesheetData, spreadsheetYear: currentYear, spreadsheetMonth: currentMonthName)
             }
             else {
-                
                 showAlert = true
-                
                 }
         }) {
             Text("Submit")

@@ -126,14 +126,8 @@ func getAuthScope( ) {
                     
                     self.isLoggedIn = true
                 }
-  //              readData()
-  //              TimeEntryView()
-                // If sign in succeeded, display the app's main content View.
             }
-  //              self.checkAuthScope()
-  //              self.checkStatus()
-  //              readData()
-            }
+      }
         
     func signOut() {
         GIDSignIn.sharedInstance.signOut()

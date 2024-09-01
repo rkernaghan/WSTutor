@@ -18,6 +18,7 @@ struct SignInView: View {
     
     @AppStorage("username") var userName: String = "Tutor Name"
     @State var userinput = " "
+    @State private var showAlert = false
 
   var body: some View {
     VStack {
@@ -40,7 +41,7 @@ struct SignInView: View {
             Spacer()
             
             GoogleSignInButton(action: {
-                userAuthModel.signIn()} )
+                userAuthModel.signIn()  })
             .accessibilityIdentifier("GoogleSignInButton")
             .accessibility(hint: Text("Sign in with Google button."))
             .padding()

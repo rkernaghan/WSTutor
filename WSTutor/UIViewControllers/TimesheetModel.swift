@@ -252,7 +252,7 @@ import GoogleAPIClientForREST
         let newRowString = String(newRow)
         let range = monthName + "!A" + newRowString + ":E" + newRowString
         print("Range", range)
- //       let updateValues = [[studentName, serviceDate, duration, serviceName]]
+  
         let updateValues = [[studentName, stringDate, duration, serviceName, note]]
         let valueRange = GTLRSheets_ValueRange() // GTLRSheets_ValueRange holds the updated values and other params
         valueRange.majorDimension = "ROWS" // Indicates horizontal row insert
