@@ -28,7 +28,6 @@
 		027666EC2C4041F80031B2AD /* TimesheetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimesheetModel.swift; sourceTree = "<group>"; };
 		02B3550A2C310E4E008035E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		02B3550D2C339078008035E9 /* TimeSheetLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSheetLoader.swift; sourceTree = "<group>"; };
-		02B355112C342BEF008035E9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		02B7AB6D2C3063CD00D68E07 /* UserAuthModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAuthModel.swift; sourceTree = "<group>"; };
 		02E1AFA62C2DF02100C43875 /* TimeEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeEntryView.swift; sourceTree = "<group>"; };
 		02E1AFA82C2DF06E00C43875 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
@@ -71,7 +70,6 @@
 			isa = PBXGroup;
 			children = (
 				02B3550A2C310E4E008035E9 /* Info.plist */,
-				02B355112C342BEF008035E9 /* GoogleService-Info.plist */,
 				022503612C2C8BDC0054C2FD /* WSTutorApp.swift */,
 				022503652C2C8BDF0054C2FD /* Assets.xcassets */,
 				02B3550C2C339052008035E9 /* Services */,
