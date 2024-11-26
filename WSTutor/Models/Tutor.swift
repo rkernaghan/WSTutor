@@ -105,6 +105,8 @@ class Tutor: Identifiable {
 		var sheetCells = [[String]]()
 		var sheetData: SheetData?
 		
+		tutorStudents.removeAll()
+		
 		// Read in the Tutor Students data from the Tutor Details spreadsheet
 		if tutorStudentCount > 0 {
 			do {
@@ -153,7 +155,9 @@ class Tutor: Identifiable {
 		
 		var sheetCells = [[String]]()
 		var sheetData: SheetData?
-		
+	
+		tutorServices.removeAll()
+	
 		// Read in the Tutor Services data from the Tutor Details spreadsheet
 		if tutorServiceCount > 0 {
 			do {
@@ -207,6 +211,8 @@ class Tutor: Identifiable {
 		
 		var sheetCells = [[String]]()
 		var sheetData: SheetData?
+		
+		tutorNotes.removeAll()
 		
 		// Read in the Tutor Services data from the Tutor Details spreadsheet
 		if tutorNotesCount > 0 {

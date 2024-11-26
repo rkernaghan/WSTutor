@@ -153,7 +153,7 @@ struct TimesheetHeaderView: View {
 					selectedStudent = PgmConstants.studentPrompt
 					selectedService = PgmConstants.servicePrompt
 					selectedNote = PgmConstants.notePrompt
-					
+					timesheetVM.isDataLoaded = false
 					let currentDate = Date.now
 					let formatter1 = DateFormatter()
 					formatter1.dateFormat = "M"
@@ -167,11 +167,13 @@ struct TimesheetHeaderView: View {
 					if !tutorResult {
 						print("Error: Could not get Tutor data on refresh")
 					} else {
-						let timesheetResult = await timesheetVM.getTutorData(tutorName: userName, tutorData: tutorData)
-						if !timesheetResult {
-							print("Error: Could not get Timesheet data on refresh")
-						} else {
-							print("Got Tutor and Timesheet data on refresh")
+						if let timesheetFileID = tutorData.timesheetFileID {
+							let timesheetResult = await timesheetVM.getTimesheetData(tutorName: userName, month: currentMonthName, timesheetFileID: timesheetFileID)
+							if !timesheetResult {
+								print("Error: Could not get Timesheet data on refresh")
+							} else {
+								print("Got Tutor and Timesheet data on refresh")
+							}
 						}
 					}
 				}
@@ -308,7 +310,6 @@ struct SubmitButtonView: View {
 					formatter1.dateStyle = .short
 					let currentDate = Date.now
 					formatter1.dateFormat = "yyyy"
-					let currentYear = formatter1.string(from: currentDate)
 					formatter1.dateFormat = "M"
 					let currentMonth = formatter1.string(from: currentDate)
 					let currentMonthNum = Int(currentMonth)

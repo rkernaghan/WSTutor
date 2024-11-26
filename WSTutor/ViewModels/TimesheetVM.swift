@@ -172,7 +172,7 @@ import GoogleAPIClientForREST
 		
 		let durationInt = Int(duration) ?? 0
 		let dateFormatter = DateFormatter()
-		dateFormatter.dateFormat = "dd/MM/yyyy"
+		dateFormatter.dateFormat = "MM/dd/yyyy"
 		let serviceDateString = dateFormatter.string(from: serviceDate)
 		
 		let monthNumber = Calendar.current.component(.month, from: serviceDate)
