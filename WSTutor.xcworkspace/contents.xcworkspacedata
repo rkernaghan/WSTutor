@@ -7,4 +7,11 @@
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
    </FileRef>
+   <Group
+      location = "group:WSTutor/Services"
+      name = "Services">
+      <FileRef
+         location = "group:TimeSheetLoader.swift">
+      </FileRef>
+   </Group>
 </Workspace>

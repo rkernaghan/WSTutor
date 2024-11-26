@@ -11,9 +11,15 @@
 		022503642C2C8BDC0054C2FD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022503632C2C8BDC0054C2FD /* ContentView.swift */; };
 		022503662C2C8BDF0054C2FD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 022503652C2C8BDF0054C2FD /* Assets.xcassets */; };
 		022503692C2C8BDF0054C2FD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 022503682C2C8BDF0054C2FD /* Preview Assets.xcassets */; };
-		027666ED2C4041F80031B2AD /* TimesheetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027666EC2C4041F80031B2AD /* TimesheetModel.swift */; };
-		02B3550E2C339078008035E9 /* TimeSheetLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B3550D2C339078008035E9 /* TimeSheetLoader.swift */; };
-		02B7AB6E2C3063CD00D68E07 /* UserAuthModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B7AB6D2C3063CD00D68E07 /* UserAuthModel.swift */; };
+		02253A062CF2AA5400144284 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02253A052CF2AA4800144284 /* Utilities.swift */; };
+		02253A092CF2B42700144284 /* Tutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02253A082CF2B41E00144284 /* Tutor.swift */; };
+		02253A0B2CF2B43700144284 /* Timesheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02253A0A2CF2B43300144284 /* Timesheet.swift */; };
+		02253A0D2CF2B47700144284 /* TutorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02253A0C2CF2B47000144284 /* TutorService.swift */; };
+		02253A0F2CF2B48400144284 /* TutorStudent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02253A0E2CF2B47E00144284 /* TutorStudent.swift */; };
+		02253A112CF2B6B400144284 /* TimesheetRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02253A102CF2B6AE00144284 /* TimesheetRow.swift */; };
+		02253A132CF5199100144284 /* TutorNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02253A122CF5198300144284 /* TutorNote.swift */; };
+		027666ED2C4041F80031B2AD /* TimesheetVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027666EC2C4041F80031B2AD /* TimesheetVM.swift */; };
+		02B7AB6E2C3063CD00D68E07 /* UserAuthVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B7AB6D2C3063CD00D68E07 /* UserAuthVM.swift */; };
 		02E1AFA72C2DF02100C43875 /* TimeEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E1AFA62C2DF02100C43875 /* TimeEntryView.swift */; };
 		02E1AFA92C2DF06E00C43875 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E1AFA82C2DF06E00C43875 /* SignInView.swift */; };
 		2A7FE07685D6B96E1F2364D2 /* Pods_WSTutor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FE63710FE2B4C29A316220D /* Pods_WSTutor.framework */; };
@@ -25,10 +31,16 @@
 		022503632C2C8BDC0054C2FD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		022503652C2C8BDF0054C2FD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		022503682C2C8BDF0054C2FD /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		027666EC2C4041F80031B2AD /* TimesheetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimesheetModel.swift; sourceTree = "<group>"; };
+		02253A052CF2AA4800144284 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		02253A082CF2B41E00144284 /* Tutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tutor.swift; sourceTree = "<group>"; };
+		02253A0A2CF2B43300144284 /* Timesheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timesheet.swift; sourceTree = "<group>"; };
+		02253A0C2CF2B47000144284 /* TutorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorService.swift; sourceTree = "<group>"; };
+		02253A0E2CF2B47E00144284 /* TutorStudent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorStudent.swift; sourceTree = "<group>"; };
+		02253A102CF2B6AE00144284 /* TimesheetRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimesheetRow.swift; sourceTree = "<group>"; };
+		02253A122CF5198300144284 /* TutorNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorNote.swift; sourceTree = "<group>"; };
+		027666EC2C4041F80031B2AD /* TimesheetVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimesheetVM.swift; sourceTree = "<group>"; };
 		02B3550A2C310E4E008035E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		02B3550D2C339078008035E9 /* TimeSheetLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSheetLoader.swift; sourceTree = "<group>"; };
-		02B7AB6D2C3063CD00D68E07 /* UserAuthModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAuthModel.swift; sourceTree = "<group>"; };
+		02B7AB6D2C3063CD00D68E07 /* UserAuthVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAuthVM.swift; sourceTree = "<group>"; };
 		02E1AFA62C2DF02100C43875 /* TimeEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeEntryView.swift; sourceTree = "<group>"; };
 		02E1AFA82C2DF06E00C43875 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		743DFAE9ACEEE3FD39D80FDB /* Pods-WSTutor.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WSTutor.release.xcconfig"; path = "Target Support Files/Pods-WSTutor/Pods-WSTutor.release.xcconfig"; sourceTree = "<group>"; };
@@ -72,10 +84,10 @@
 				02B3550A2C310E4E008035E9 /* Info.plist */,
 				022503612C2C8BDC0054C2FD /* WSTutorApp.swift */,
 				022503652C2C8BDF0054C2FD /* Assets.xcassets */,
-				02B3550C2C339052008035E9 /* Services */,
-				02B7AB6A2C2F8F7C00D68E07 /* UIViewControllers */,
+				02253A032CF2A90700144284 /* Services */,
+				02253A072CF2B1C600144284 /* Models */,
 				02E1AF9E2C2DAEF200C43875 /* ViewModels */,
-				02E1AFA32C2DEFA200C43875 /* View */,
+				02E1AFA32C2DEFA200C43875 /* Views */,
 				022503672C2C8BDF0054C2FD /* Preview Content */,
 			);
 			path = WSTutor;
@@ -89,38 +101,44 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		02B3550C2C339052008035E9 /* Services */ = {
+		02253A032CF2A90700144284 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				02B3550D2C339078008035E9 /* TimeSheetLoader.swift */,
+				02253A052CF2AA4800144284 /* Utilities.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
 		};
-		02B7AB6A2C2F8F7C00D68E07 /* UIViewControllers */ = {
+		02253A072CF2B1C600144284 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				02B7AB6D2C3063CD00D68E07 /* UserAuthModel.swift */,
-				027666EC2C4041F80031B2AD /* TimesheetModel.swift */,
+				02253A102CF2B6AE00144284 /* TimesheetRow.swift */,
+				02253A0A2CF2B43300144284 /* Timesheet.swift */,
+				02253A122CF5198300144284 /* TutorNote.swift */,
+				02253A0E2CF2B47E00144284 /* TutorStudent.swift */,
+				02253A0C2CF2B47000144284 /* TutorService.swift */,
+				02253A082CF2B41E00144284 /* Tutor.swift */,
 			);
-			path = UIViewControllers;
+			path = Models;
 			sourceTree = "<group>";
 		};
 		02E1AF9E2C2DAEF200C43875 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				02B7AB6D2C3063CD00D68E07 /* UserAuthVM.swift */,
+				027666EC2C4041F80031B2AD /* TimesheetVM.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
-		02E1AFA32C2DEFA200C43875 /* View */ = {
+		02E1AFA32C2DEFA200C43875 /* Views */ = {
 			isa = PBXGroup;
 			children = (
 				022503632C2C8BDC0054C2FD /* ContentView.swift */,
 				02E1AFA62C2DF02100C43875 /* TimeEntryView.swift */,
 				02E1AFA82C2DF06E00C43875 /* SignInView.swift */,
 			);
-			path = View;
+			path = Views;
 			sourceTree = "<group>";
 		};
 		84630414CFBDF4D406BE2072 /* Pods */ = {
@@ -254,11 +272,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				027666ED2C4041F80031B2AD /* TimesheetModel.swift in Sources */,
+				027666ED2C4041F80031B2AD /* TimesheetVM.swift in Sources */,
+				02253A112CF2B6B400144284 /* TimesheetRow.swift in Sources */,
 				022503642C2C8BDC0054C2FD /* ContentView.swift in Sources */,
-				02B7AB6E2C3063CD00D68E07 /* UserAuthModel.swift in Sources */,
+				02253A132CF5199100144284 /* TutorNote.swift in Sources */,
+				02253A0B2CF2B43700144284 /* Timesheet.swift in Sources */,
+				02253A0F2CF2B48400144284 /* TutorStudent.swift in Sources */,
+				02253A062CF2AA5400144284 /* Utilities.swift in Sources */,
+				02B7AB6E2C3063CD00D68E07 /* UserAuthVM.swift in Sources */,
+				02253A092CF2B42700144284 /* Tutor.swift in Sources */,
+				02253A0D2CF2B47700144284 /* TutorService.swift in Sources */,
 				02E1AFA72C2DF02100C43875 /* TimeEntryView.swift in Sources */,
-				02B3550E2C339078008035E9 /* TimeSheetLoader.swift in Sources */,
 				022503622C2C8BDC0054C2FD /* WSTutorApp.swift in Sources */,
 				02E1AFA92C2DF06E00C43875 /* SignInView.swift in Sources */,
 			);
