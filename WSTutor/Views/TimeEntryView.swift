@@ -41,7 +41,8 @@ struct TimeEntryView: View {
 	@State var selectedNote: String = " "
 	@State var serviceDate: Date
 	@State var minutes: String
-		
+	
+	@State var showAlert: Bool = false
 	@State var errorMsg: String = " "
 	
 	var body: some View {
@@ -86,6 +87,11 @@ struct TimeEntryView: View {
 			}
 		}
 		.border(.orange, width: 8)
+		.alert("Could not read Tutor Data for \(userName)", isPresented: $showAlert) {
+			Button("OK", role: .cancel) {
+				userAuthVM.signOut()
+			}
+		}
 		
 		.onAppear(perform: {
 			Task {
@@ -104,6 +110,7 @@ struct TimeEntryView: View {
 				let tutorResult = await timesheetVM.getTutorData(tutorName: userName, tutorData: tutorData)
 				if !tutorResult {
 					print("Error: Could not get Tutor data")
+					showAlert = true
 				} else {
 					if let timesheetFileID = tutorData.timesheetFileID {
 						let timesheetResult = await timesheetVM.getTimesheetData(tutorName: userName, month: currentMonthName, timesheetFileID: timesheetFileID )
@@ -224,6 +231,7 @@ struct StudentServicePickerView: View {
 					}
 				}
 				.accentColor(Color.black)
+				.pickerStyle(.menu)
 			}
 			
 			HStack {
@@ -234,6 +242,7 @@ struct StudentServicePickerView: View {
 					}
 				}
 				.accentColor(Color.black)
+				.pickerStyle(.menu)
 			}
 			
 			HStack {
@@ -244,6 +253,7 @@ struct StudentServicePickerView: View {
 					}
 				}
 				.accentColor(Color.black)
+				.pickerStyle(.menu)
 			}
 		}
 	}

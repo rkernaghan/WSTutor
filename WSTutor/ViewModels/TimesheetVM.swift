@@ -17,6 +17,27 @@ import GoogleAPIClientForREST
 	init() {
 		isDataLoaded = false
 	}
+	func checkTutorName(tutorName: String) async -> Bool {
+		var checkResult: Bool = true
+		
+		if tutorName.isEmpty {
+			return false
+		} else {
+			let range = tutorName + "!A1:A1"
+			do {
+				let sheetCells = try await readSheetCells(fileID: tutorDetailsFileID, range: range)
+				if sheetCells == nil {
+					checkResult = false
+				} else {
+					checkResult = true
+				}
+			} catch {
+				checkResult = false
+			}
+		}
+		return(checkResult)
+	}
+	
 	//
 	// This function loads the Tutor's reference data from their RefDaTa sheet.
 	// 1) Call Google Drive to search for for the Tutor's timesheet file name in order to get the file's Google File ID
@@ -162,7 +183,14 @@ import GoogleAPIClientForREST
 			submitErrorMsg += "Error: Invalid duration"
 			validationResult = false
 		}
-		
+		if let currentMonthInt = Calendar.current.dateComponents([.month], from: Date()).month {
+			let timesheetMonthNum = Calendar.current.component(.month, from: serviceDate)
+			if currentMonthInt != timesheetMonthNum {
+				submitErrorMsg = "Service must be from current month"
+				validationResult = false
+			}
+		}
+	
 		return(validationResult)
 		
 	}

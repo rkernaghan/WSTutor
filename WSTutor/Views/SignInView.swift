@@ -34,13 +34,19 @@ struct SignInView: View {
 						}
 						.onAppear {
 							userinput = userName
-
 							print("Loaded: \(userName)")
 						}
 					Spacer()
 					
 					GoogleSignInButton(action: {
-						userAuthVM.signIn()  })
+						Task {
+							userAuthVM.signIn()
+							let tutorNameFlag = await timesheetVM.checkTutorName(tutorName: userName)
+							if !tutorNameFlag {
+								showAlert = true
+							}
+						}
+					})
 					.accessibilityIdentifier("GoogleSignInButton")
 					.accessibility(hint: Text("Sign in with Google button."))
 					.padding()
@@ -51,6 +57,9 @@ struct SignInView: View {
 				}
 			}
 			Spacer()
+		}
+		.alert("Invalid Tutor Name", isPresented: $showAlert) {
+			Button("OK", role: .cancel) { }
 		}
 	}
 	

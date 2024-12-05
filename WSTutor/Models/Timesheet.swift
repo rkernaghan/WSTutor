@@ -66,22 +66,24 @@ import Foundation
 			var rowNum = PgmConstants.timesheetFirstSessionRow - 1				// subtract 1 for zero-based array
 			let rowCounter = entryCount + 12                                                // 12 blank rows allowed
 			while entryCounter < entryCount && rowNum < rowCounter {
-				let date = sheetCells[rowNum][PgmConstants.timesheetDateCol]
-				if date != "" && date != " " {
-					let student = sheetCells[rowNum][PgmConstants.timesheetStudentCol]
+				if sheetCells[rowNum].count == 9 {						// Ignore rows where all cells are not populated
 					let date = sheetCells[rowNum][PgmConstants.timesheetDateCol]
-					let duration = Int(sheetCells[rowNum][PgmConstants.timesheetDurationCol]) ?? 0
-					let service = sheetCells[rowNum][PgmConstants.timesheetServiceCol]
-					let note = sheetCells[rowNum][PgmConstants.timesheetNotesCol]
-//					let cost = Float(sheetCells[rowNum][PgmConstants.timesheetCostCol]) ?? 0.0
-//					let clientName = sheetCells[rowNum][PgmConstants.timesheetClientNameCol]
-//					let clientEmail = sheetCells[rowNum][PgmConstants.timesheetClientEmailCol]
-//					let clientPhone = sheetCells[rowNum][PgmConstants.timesheetClientPhoneCol]
-//					let newTimesheetRow = TimesheetRow(studentName: student, serviceDate: date, duration: duration, serviceName: service, notes: notes, cost: cost, clientName: clientName, clientEmail: clientEmail, clientPhone: clientPhone, tutorName: tutorName)
-					let newTimesheetRow = TimesheetRow(studentName: student, serviceDate: date, duration: duration, serviceName: service, note: note)
-					self.addTimesheetRow(timesheetRow: newTimesheetRow)
-					//   print(tutorName, student, date, service)
-					entryCounter += 1
+					if date != "" && date != " " {
+						let student = sheetCells[rowNum][PgmConstants.timesheetStudentCol]
+						let date = sheetCells[rowNum][PgmConstants.timesheetDateCol]
+						let duration = Int(sheetCells[rowNum][PgmConstants.timesheetDurationCol]) ?? 0
+						let service = sheetCells[rowNum][PgmConstants.timesheetServiceCol]
+						let note = sheetCells[rowNum][PgmConstants.timesheetNotesCol]
+						//					let cost = Float(sheetCells[rowNum][PgmConstants.timesheetCostCol]) ?? 0.0
+						//					let clientName = sheetCells[rowNum][PgmConstants.timesheetClientNameCol]
+						//					let clientEmail = sheetCells[rowNum][PgmConstants.timesheetClientEmailCol]
+						//					let clientPhone = sheetCells[rowNum][PgmConstants.timesheetClientPhoneCol]
+						//					let newTimesheetRow = TimesheetRow(studentName: student, serviceDate: date, duration: duration, serviceName: service, notes: notes, cost: cost, clientName: clientName, clientEmail: clientEmail, clientPhone: clientPhone, tutorName: tutorName)
+						let newTimesheetRow = TimesheetRow(studentName: student, serviceDate: date, duration: duration, serviceName: service, note: note)
+						self.addTimesheetRow(timesheetRow: newTimesheetRow)
+						//   print(tutorName, student, date, service)
+						entryCounter += 1
+					}
 				}
 				rowNum += 1
 			}

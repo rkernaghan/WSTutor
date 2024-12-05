@@ -108,7 +108,7 @@ var accessOAuthToken: String = ""
 var refreshOAuthToken: String = ""
 var clientOAuthID: String = ""
 var tokenExpiryTime: Date = Date.now
-var runMode = "Test"
+var runMode = "PROD"
 var tutorDetailsFileID: String = ""
 
 var timesheetData = Timesheet()

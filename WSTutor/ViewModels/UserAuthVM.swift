@@ -145,9 +145,7 @@ import GoogleSignIn
 						self.isLoggedIn = true
 					}
 				} else {
-					print("SignIn - already had scope")
-					//                  readData(fileName: "Timesheet 2024 Tutor 2")
-					
+					print("SignIn - already had scope")					
 					self.isLoggedIn = true
 				}
 			}
