@@ -111,6 +111,7 @@ class Tutor: Identifiable {
 		if tutorStudentCount > 0 {
 			do {
 				let range = tutorName + PgmConstants.tutorStudentsRange + String(PgmConstants.tutorDataStudentsStartingRowNumber + tutorStudentCount - 1)
+
 				sheetData = try await readSheetCells(fileID: tutorDetailsFileID, range: range )
 				// Build the Tutor Students list from the cells read in
 				if let sheetData = sheetData {
@@ -120,7 +121,7 @@ class Tutor: Identifiable {
 					completionFlag = false
 				}
 			} catch {
-				print("ERROR: could not read Tutor Student sheet cells for \(tutorName)")
+				print("Tutor-fetchTutorStudentData: ERROR: could not read Tutor Student sheet cells for \(tutorName)")
 				completionFlag = false
 			}
 		}
@@ -171,7 +172,7 @@ class Tutor: Identifiable {
 					completionFlag = false
 				}
 			} catch {
-				print("ERROR: could not read Tutor Services sheet cells for \(tutorName)")
+				print("Tutor-fetchTutorServiceData: ERROR: could not read Tutor Services sheet cells for \(tutorName)")
 				completionFlag = false
 			}
 		}
@@ -227,7 +228,7 @@ class Tutor: Identifiable {
 					completionFlag = false
 				}
 			} catch {
-				print("ERROR: could not read Tutor Notes sheet cells for \(tutorName)")
+				print("Tutor-fetchTutorNotesData: ERROR: could not read Tutor Notes sheet cells for \(tutorName)")
 				completionFlag = false
 			}
 		}

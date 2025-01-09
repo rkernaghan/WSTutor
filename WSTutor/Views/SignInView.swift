@@ -34,18 +34,21 @@ struct SignInView: View {
 						}
 						.onAppear {
 							userinput = userName
-							print("Loaded: \(userName)")
+							print("SignInView-OnAppear: User Name: \(userName)")
 						}
 					Spacer()
 					
 					GoogleSignInButton(action: {
-						Task {
+//						Task {
 							userAuthVM.signIn()
-							let tutorNameFlag = await timesheetVM.checkTutorName(tutorName: userName)
-							if !tutorNameFlag {
-								showAlert = true
-							}
-						}
+//							if userAuthVM.isLoggedIn {
+//						Task {
+//								let tutorNameFlag = await timesheetVM.checkTutorName(tutorName: userName)
+//								if !tutorNameFlag {
+//									showAlert = true
+//								}
+//							}
+//						}
 					})
 					.accessibilityIdentifier("GoogleSignInButton")
 					.accessibility(hint: Text("Sign in with Google button."))

@@ -5,6 +5,7 @@
 //  Created by Russell Kernaghan on 2024-11-23.
 //
 import GoogleSignIn
+import GoogleAPIClientForREST
 
 func getAccessToken() async -> (Bool) {
 	var returnResult: Bool = true
@@ -32,6 +33,7 @@ func getAccessToken() async -> (Bool) {
 				print("Could not refresh access Token")
 			}
 		} else {
+			print("Utilities-getAccessToken: Access Token is not expired")
 			returnResult = true
 		}
 	} else {
@@ -47,11 +49,11 @@ func isTokenExpired() -> Bool {
 	if let token = token {
 		let tokenExpiry = oauth2Token.expiresAt
 		if let tokenExpiry = tokenExpiry {
-			//			print("Checking token expiry - time: \(Date()) expires at: \(tokenExpiry)")
+			print("Checking token expiry - time: \(Date()) expires at: \(tokenExpiry)")
 			if Date() >= tokenExpiry {
 				print("Token Time Expiry Test Failed")
 			} else {
-				//				print("Token not expired")
+				print("Token not expired")
 			}
 			return Date() >= tokenExpiry
 		} else {
@@ -76,6 +78,7 @@ func refreshAccessToken() async throws -> (Date?, String?) {
 	
 	// HTTP request body with URL-encoded parameters
 	let refreshToken = oauth2Token.refreshToken
+	print("Refreshing Access Token")
 	
 	if let refreshToken = refreshToken {
 		let clientID = oauth2Token.clientID
@@ -181,6 +184,7 @@ func readSheetCells(fileID: String, range: String) async throws -> SheetData? {
 	//	let currentUser = GIDSignIn.sharedInstance.currentUser
 	//	if let user = currentUser {
 	//		accessToken = user.accessToken.tokenString
+	print("Utilities-readSheetCells: Range:\(range)| FileID:\(fileID)")
 	
 	let tokenFound = await getAccessToken()
 	if tokenFound {
@@ -197,9 +201,12 @@ func readSheetCells(fileID: String, range: String) async throws -> SheetData? {
 			request.httpMethod = "GET"
 			request.addValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
 			
+//			print("Utilities-readSheetCells: Granted scopes: \(grantedScopes)")
+			
 			// Use async URLSession to fetch the data
 			//    print("Before Read Cells URL Session call \(fileID)")
 			let (data, response) = try await URLSession.shared.data(for: request)
+			
 			//    print("After Read Cells URL Session call \(fileID)")
 			if let httpResponse = response as? HTTPURLResponse {
 				if httpResponse.statusCode != 200 {
@@ -213,6 +220,7 @@ func readSheetCells(fileID: String, range: String) async throws -> SheetData? {
 			
 			// Decode the JSON data into the SheetData structure
 			sheetData = try JSONDecoder().decode(SheetData.self, from: data)
+			print("Utilities-readSheetCells: Read range \(range)")
 		}
 		
 	}
@@ -221,6 +229,54 @@ func readSheetCells(fileID: String, range: String) async throws -> SheetData? {
 	//        }
 }
 
+func readSheetCellsSynch(fileID: String, range: String) throws {
+	
+	print("\n Asynch read cells start")
+	let urlString = "https://sheets.googleapis.com/v4/spreadsheets/\(fileID)/values/\(range)"
+	guard let url = URL(string: urlString) else {
+		print("Bad URL in readSheetCellsSynch")
+		throw URLError(.badURL)
+	}
+	let accessToken = oauth2Token.accessToken
+	
+	let sheetService = GTLRSheetsService()
+	let currentUser = GIDSignIn.sharedInstance.currentUser
+	sheetService.authorizer = currentUser?.fetcherAuthorizer
+	
+	let spreadsheetId = fileID
+	let query = GTLRSheetsQuery_SpreadsheetsValuesGet
+		.query(withSpreadsheetId: spreadsheetId, range:range)
+	
+	sheetService.executeQuery(query) { (ticket, result, error) in
+	// Set up the request with OAuth 2.0 token
+		if let error = error {
+			// Access the error description
+			print("Read Sheets Synch Error: \(error.localizedDescription)")
+		}
+		
+		print("Asynch Read Cells after GETRequest")
+		
+		guard let result = result as? GTLRSheets_ValueRange else {
+			return
+		}
+		
+		let rows = result.values!
+		var stringRows = rows as! [[String]]
+		
+		for row in stringRows {
+			stringRows.append(row)
+			print(row)
+		}
+		if rows.isEmpty {
+			print("No data found.")
+			return
+		}
+		print("Success!")
+		print("Number of rows in sheet: \(rows.count)")
+	}
+	print("Asynch read cells End\n ")
+	
+}
 
 func writeSheetCells(fileID: String, range: String, values: [[String]]) async throws -> Bool {
 	var completionFlag: Bool = true
@@ -348,7 +404,8 @@ func getSheetCount(spreadsheetId: String) async throws -> Int {
 	let tokenFound = await getAccessToken()
 	if tokenFound {
 		let accessToken = oauth2Token.accessToken
-		if let accessToken = accessToken {		let accessToken = oauth2Token.accessToken
+		if let accessToken = accessToken {
+			let accessToken = oauth2Token.accessToken
 			if let accessToken = accessToken {
 				var request = URLRequest(url: url)
 				request.httpMethod = "GET"

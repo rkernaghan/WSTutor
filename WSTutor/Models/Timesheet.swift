@@ -47,7 +47,7 @@ import Foundation
 				completionFlag = false
 			}
 		} catch {
-			print("ERROR: could not readSheetCells for \(tutorName) Timesheet")
+			print("Timesheet-loadTimesheetData: ERROR: could not readSheetCells for \(tutorName) Timesheet")
 			completionFlag = false
 		}
 		return(completionFlag)

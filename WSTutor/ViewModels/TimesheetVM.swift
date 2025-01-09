@@ -17,8 +17,10 @@ import GoogleAPIClientForREST
 	init() {
 		isDataLoaded = false
 	}
+	
 	func checkTutorName(tutorName: String) async -> Bool {
 		var checkResult: Bool = true
+		print("TimesheetVM-checkTutorName: checking tutor name \(tutorName)")
 		
 		if tutorName.isEmpty {
 			return false
@@ -27,8 +29,10 @@ import GoogleAPIClientForREST
 			do {
 				let sheetCells = try await readSheetCells(fileID: tutorDetailsFileID, range: range)
 				if sheetCells == nil {
+					print("TimesheetVM-checkTutorName: unable to read tutor details")
 					checkResult = false
 				} else {
+					print("TimesheetVM-checkTutorName: tutor details found")
 					checkResult = true
 				}
 			} catch {
@@ -103,6 +107,9 @@ import GoogleAPIClientForREST
 		
 		do {
 			range = tutorName + PgmConstants.tutorDataRange
+			
+//			try readSheetCellsSynch(fileID: tutorDetailsFileID, range: range )
+
 			sheetData = try await readSheetCells(fileID: tutorDetailsFileID, range: range )
 			
 			if let sheetData = sheetData {
@@ -120,7 +127,7 @@ import GoogleAPIClientForREST
 			}
 			
 		} catch {
-			print("Error: could not read Tutor Data Counts for Tutor \(tutorName), will try again")
+			print("TimesheetVM-fetchTutorDataCounts: Error: could not read Tutor Data Counts for Tutor \(tutorName), will try again")
 			do {
 				sheetData = try await readSheetCells(fileID: tutorDetailsFileID, range: range )
 				
@@ -139,14 +146,13 @@ import GoogleAPIClientForREST
 				}
 				
 			} catch {
-				print("Error: could not Tutor Data Counts for Tutor \(tutorName) on second attempt")
+				print("TimesheetVM-fetchTutorDataCounts: Error: could not Tutor Data Counts for Tutor \(tutorName) on second attempt")
 				studentCount = 0
 				serviceCount = 0
 				notesCount = 0
 				fetchResult = false
 			}
 		}
-		
 		return(fetchResult, studentCount, serviceCount, notesCount, timesheetFileID)
 	}
 	

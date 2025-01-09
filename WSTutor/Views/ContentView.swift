@@ -19,12 +19,11 @@ struct ContentView: View {
 		VStack{
 			
 			if (userAuthVM.isLoggedIn) {
-				TimeEntryView(selectedStudent: PgmConstants.studentPrompt, selectedService: PgmConstants.servicePrompt, selectedNote: PgmConstants.notePrompt, serviceDate: Date.now, minutes: "0")
-				
+				TimeEntryView()
 			} else {
 				SignInView()
 			}
-			Text(userAuthVM.errorMessage)
+
 		}
 		.navigationTitle("Login")
 		.environment(timesheetVM)

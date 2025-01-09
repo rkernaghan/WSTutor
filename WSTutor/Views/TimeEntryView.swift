@@ -36,11 +36,11 @@ struct TimeEntryView: View {
 	@Environment(UserAuthVM.self) var userAuthVM: UserAuthVM
 	@Environment(TimesheetVM.self) var timesheetVM: TimesheetVM
 	
-	@State var selectedStudent: String = " "
-	@State var selectedService: String = " "
-	@State var selectedNote: String = " "
-	@State var serviceDate: Date
-	@State var minutes: String
+	@State private var selectedStudent: String = " "
+	@State private var selectedService: String = " "
+	@State private var selectedNote: String = "-"
+	@State private var serviceDate: Date = Date.now
+	@State private var minutes: String = "0"
 	
 	@State var showAlert: Bool = false
 	@State var errorMsg: String = " "
@@ -89,13 +89,13 @@ struct TimeEntryView: View {
 		.border(.orange, width: 8)
 		.alert("Could not read Tutor Data for \(userName)", isPresented: $showAlert) {
 			Button("OK", role: .cancel) {
-				userAuthVM.signOut()
+//				userAuthVM.signOut()
 			}
 		}
 		
 		.onAppear(perform: {
 			Task {
-				print("Start OnAppear")
+				print("TimeEntryView: Start OnAppear")
 				let currentDate = Date.now
 				let formatter1 = DateFormatter()
 				formatter1.dateFormat = "M"
@@ -105,22 +105,22 @@ struct TimeEntryView: View {
 				formatter1.dateFormat = "yyyy"
 				let currentYear = formatter1.string(from: currentDate)
 				let spreadsheetName = "Timesheet " + currentYear + " " + userName
-				print(spreadsheetName, currentMonthName)
+				print("TimeEntryView: Tutor Timesheet name: \(spreadsheetName); Current month: \(currentMonthName)")
 				
 				let tutorResult = await timesheetVM.getTutorData(tutorName: userName, tutorData: tutorData)
 				if !tutorResult {
-					print("Error: Could not get Tutor data")
+					print("TimeEntryView-OnAppear: Error: Could not get Tutor data")
 					showAlert = true
 				} else {
 					if let timesheetFileID = tutorData.timesheetFileID {
 						let timesheetResult = await timesheetVM.getTimesheetData(tutorName: userName, month: currentMonthName, timesheetFileID: timesheetFileID )
 						if !timesheetResult {
-							print("Error: Could not get Timesheet data")
+							print("TimeEntryView-OnAppear: Error: Could not get Timesheet data")
 						} else {
-							print("Got Tutor and Timesheet data")
+							print("TimeEntryView-OnAppear: Got Tutor and Timesheet data")
 						}
 					} else {
-						print("Error: no TimesheetFileID available")
+						print("TimeEntryView-OnAppear: Error: no TimesheetFileID available")
 					}
 						
 				}
@@ -378,7 +378,7 @@ struct SessionHistoryView: View {
 }
 
 #Preview {
-	TimeEntryView(selectedStudent: PgmConstants.studentPrompt, selectedService: PgmConstants.servicePrompt, selectedNote: PgmConstants.notePrompt, serviceDate: Date.now, minutes: " ")
+	TimeEntryView()
 	//    TimeEntryView()
 }
 

@@ -12,27 +12,49 @@ import GoogleSignIn
 
 @Observable class UserAuthVM {
     
-	var givenName: String = ""
 	var isLoggedIn: Bool = false
 	var errorMessage: String = ""
 	
 	init() {
-		check()
+		print("UserAuthVM-init: Starting")
+		restoreSignIn()
+		print("UserAuthVM-init: Ending")
 	}
 	
-	func checkStatus() {
+	func signIn() {
+		
+		guard let presentingViewController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.rootViewController else {
+			return
+		}
+		print("UserAuthVM-signIn: Starting SignIn")
+		GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) {signInResult, error in
+			guard let result = signInResult else {
+				print("UserAuthVM-signin: Signin request failed \(String(describing: error?.localizedDescription))")
+				return
+			}
+			
+			if let error = error {
+				print("UserAuthVM-signIn: SignIn error: \(error.localizedDescription)")
+			}
+			print("UserAuthVM-signIn: Sign In Request Successful")
+				
+//			self.checkSignInStatus()
+			self.restoreSignIn()
+		}
+	}
+	
+	func checkSignInStatus() {
 		var tokenExpirationDate: Date?
 		
+		print("UserAuthVM-checkSignInStatus: Starting checkSignInStatus")
+		
 		if (GIDSignIn.sharedInstance.currentUser != nil) {
+			print("UserAuthVM-checkstatus: User is logged in")
+			
 			let user = GIDSignIn.sharedInstance.currentUser
 			guard let user = user else {
+				print("UserAuthVM-checkSignInStatus: User signed in but user is nil, returning early")
 				return }
-			let givenName = user.profile?.givenName
-			
-			self.givenName = givenName ?? ""
-			print(self.givenName)
-			checkAuthScope()
-			self.isLoggedIn = true
 			
 			let currentUser = GIDSignIn.sharedInstance.currentUser
 			if let user = currentUser {
@@ -43,7 +65,6 @@ import GoogleSignIn
 					accessOAuthToken = user.accessToken.tokenString
 					refreshOAuthToken = user.refreshToken.tokenString
 					tokenExpirationDate = user.accessToken.expirationDate
-					
 				}
 				
 				if let tokenExpirationDate = tokenExpirationDate {
@@ -52,23 +73,49 @@ import GoogleSignIn
 					oauth2Token.expiresAt = tokenExpirationDate
 					oauth2Token.clientID = clientID
 				}
+				
+				print("\nUserAuthVM-checkSignInStatus: accessToken: \(accessOAuthToken)")
+				print("UserAuthVM-checkSignInStatus: refreshToken: \(refreshOAuthToken)")
+				print("UserAuthVM-checkSignInStatus: tokenExpirationDate: \(String(describing: tokenExpirationDate))")
+				print("UserAuthVM-checkSignInStatus: clientID: \(String(describing: clientID))\n")
+				
+				let scopeStatus = checkAuthScope()
+				if !scopeStatus {
+					print("UserAuthVM-checkSignInStatus: User did not have scope, requesting it")
+					let scopeRequest = getAuthScope()
+					if scopeRequest {
+						print("UserAuthVM-checkSignInStatus: Scope request succeeded")
+						self.isLoggedIn = true
+					} else {
+						self.isLoggedIn = false
+						print("UserAuthVM-checkSignInStatus: Scope request failed")
+					}
+				} else {
+					print("UserAuthVM-checkSignInStatus: User already has scope")
+					self.isLoggedIn = true
+				}
 			} else {
+				print("UserAuthVM-checkSignInStatus: User not logged in")
 				self.isLoggedIn = false
 			}
 		} else {
+			print("UserAuthVM-checkSignInStatus: User is not logged in")
 			self.isLoggedIn = false
-			self.givenName = "Not Logged In"
 		}
 	}
 	
-	func check() {
+	func restoreSignIn() {
+		
+		print("UserAuthVM-restoreSignIn: Starting restoreSignIn function")
+		
 		GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
 			if let error = error {
 				self.errorMessage = "error: \(error.localizedDescription)"
-				print(self.errorMessage)
+				print("UserAuthVM-restoreSignIn: Could not restore SignIn \(self.errorMessage)")
+			} else {
+				print("UserAuthVM-restoreSignIn: Successfully restored previous signIn")
+				self.checkSignInStatus()
 			}
-			
-			self.checkStatus()
 		}
 	}
 	
@@ -78,82 +125,54 @@ import GoogleSignIn
 		//       let additionalScopes = ["https://www.googleapis.com/auth/drive.readonly"]
 		//      let additionalScopes = ["https://www.googleapis.com/auth/spreadsheets"]
 		guard let currentUser = GIDSignIn.sharedInstance.currentUser else {
+			print("UserAuthVM-checkAuthScope: Not signed in")
 			return(false) ;  /* Not signed in. */
 		}
 		let grantedScopes = currentUser.grantedScopes
 		if grantedScopes == nil || !grantedScopes!.contains(additionalScopes) {
-			print("CheckScope - Need to request additional scope")
+			print("UserAuthVM-checkAuthScope - Need to request additional scope")
 			return(false)
 			
 		} else {
-			print("CheckScope - Already have scope")
+			print("UserAuthVM-checkAuthScope - Already have scope")
 			return(true)
 		}
 	}
 	
-	func getAuthScope( ) {
-		
+	func getAuthScope( ) ->Bool {
+		var gotAuthScope: Bool = false
+		print("UserAuthVM-getAuthScope: Starting")
 		//   let additionalScopes = ["https://www.googleapis.com/auth/drive.readonly"]
 		let additionalScopes = ["https://www.googleapis.com/auth/spreadsheets"]
 		//   let additionalScopes = ["https://www.googleapis.com/auth/spreadsheets"]
 		guard let currentUser = GIDSignIn.sharedInstance.currentUser else {
-			return ;  /* Not signed in. */
+			print("UserAuthVM-getAuthScope: Not signed in")
+			return(gotAuthScope);  /* Not signed in. */
 		}
 		guard let presentingViewController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.rootViewController else {
-			return}
+			print("UserAuthVM-getAuthScope: No presenting window")
+			return(gotAuthScope)}
 		
 		currentUser.addScopes(additionalScopes, presenting: presentingViewController) { signInResult, error in
-			guard error == nil else {
-				return }
-			
-			guard let signInResult = signInResult else {
-				return }
-			
-			let grantedScopes = currentUser.grantedScopes
-			if grantedScopes == nil || !grantedScopes!.contains(additionalScopes) {
-				print("GetScope - Additional scopes not granted")
+			if let error = error  {
+				print("UserAuthVM-getAuthScope: Error requesting additional scopes: \(error.localizedDescription)")
 				self.isLoggedIn = false
-			}
-			else {
-				print("GetScope - Got the additional scopes")
+			} else {
+				print("UserAuthVM-getAuthScope: Additional scopes granted.")
 				self.isLoggedIn = true
-			}
-		}
-	}
-	
-	
-	func signIn() {
-		
-		guard let presentingViewController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.rootViewController else {
-			return
-		}
-		
-		GIDSignIn.sharedInstance.signIn(
-			withPresenting: presentingViewController) {signInResult, error in
-				guard let result = signInResult else {
-					// Inspect error
-					return
-				}
-				if self.checkAuthScope() == false {
-					self.getAuthScope()
-					if self.checkAuthScope() == false {
-						print("SignIn - could not get additional scope")
-						self.isLoggedIn = false
-					} else {
-						print("SignIn - got additional scope")
-						//                      readData(fileName: "Timesheet 2024 Tutor 2")
-						self.isLoggedIn = true
-					}
-				} else {
-					print("SignIn - already had scope")					
-					self.isLoggedIn = true
+				gotAuthScope = true
+				if let grantedScopes = currentUser.grantedScopes {
+					print("UserAuthVM-getAuthScope: Granted scopes: \(grantedScopes)")
 				}
 			}
+			
+		}
+		return(gotAuthScope)
 	}
 	
 	func signOut() {
 		GIDSignIn.sharedInstance.signOut()
 		isLoggedIn = false
-		self.checkStatus()
+//		self.checkStatus()
 	}
 }
