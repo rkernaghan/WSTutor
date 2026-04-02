@@ -14,42 +14,65 @@ import GoogleSignIn
     
 	var isLoggedIn: Bool = false
 	var errorMessage: String = ""
+	var accessOAuthToken: String = ""
+	var refreshOAuthToken: String = ""
+
 	
 	init() {
 		print("UserAuthVM-init: Starting")
-		restoreSignIn()
+		
+		Task {
+			await restoreSignIn()
+		}
 		print("UserAuthVM-init: Ending")
 	}
 	
-	func signIn() {
-		
-		guard let presentingViewController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.rootViewController else {
+
+	func signIn() async {
+		guard let presentingViewController = await UIApplication.shared.connectedScenes
+			.compactMap({ $0 as? UIWindowScene })
+			.first?.keyWindow?.rootViewController else {
+			print("UserAuthVM-signin: Could not get presenting view controller")
 			return
 		}
-		print("UserAuthVM-signIn: Starting SignIn")
-		GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) {signInResult, error in
-			guard let result = signInResult else {
-				print("UserAuthVM-signin: Signin request failed \(String(describing: error?.localizedDescription))")
-				return
-			}
-			
-			if let error = error {
-				print("UserAuthVM-signIn: SignIn error: \(error.localizedDescription)")
-			}
+		
+		do {
+			print("UserAuthVM-signIn: About to attempt Sign In")
+			let _ = try await GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController)
 			print("UserAuthVM-signIn: Sign In Request Successful")
-				
-//			self.checkSignInStatus()
-			self.restoreSignIn()
+			await checkSignInStatus()
+			
+		} catch {
+			print("UserAuthVM-signin: Signin request failed \(error.localizedDescription)")
 		}
 	}
 	
-	func checkSignInStatus() {
+	
+	// Attempts to restore previous Google signin
+	//
+	func restoreSignIn() async {
+		do {
+			try await GIDSignIn.sharedInstance.restorePreviousSignIn()
+			print("UserAuthVM-restoreSignIn: Successfully restored previous signin")
+			await checkSignInStatus()
+			
+		} catch {
+			self.errorMessage = "error: \(error.localizedDescription)"
+			print("UserAuthVM-restoreSignIn: Could not restore previous signin \(self.errorMessage)")
+		}
+	}
+	
+	// Checks if user is logged in and if so:
+	//		- sets up OAuth attributes to manage token expiry
+	//		- determines whether the user already has necessary Google scope
+	//
+	func checkSignInStatus() async {
 		var tokenExpirationDate: Date?
 		
 		print("UserAuthVM-checkSignInStatus: Starting checkSignInStatus")
 		
 		if (GIDSignIn.sharedInstance.currentUser != nil) {
-			print("UserAuthVM-checkstatus: User is logged in")
+			print("UserAuthVM-checkSignInStatus: User is logged in")
 			
 			let user = GIDSignIn.sharedInstance.currentUser
 			guard let user = user else {
@@ -74,15 +97,15 @@ import GoogleSignIn
 					oauth2Token.clientID = clientID
 				}
 				
-				print("\nUserAuthVM-checkSignInStatus: accessToken: \(accessOAuthToken)")
-				print("UserAuthVM-checkSignInStatus: refreshToken: \(refreshOAuthToken)")
-				print("UserAuthVM-checkSignInStatus: tokenExpirationDate: \(String(describing: tokenExpirationDate))")
-				print("UserAuthVM-checkSignInStatus: clientID: \(String(describing: clientID))\n")
+						print("\nUserAuthVM-checkSignInStatus: accessToken: \(accessOAuthToken)")
+						print("UserAuthVM-checkSignInStatus: refreshToken: \(refreshOAuthToken)")
+						print("UserAuthVM-checkSignInStatus: tokenExpirationDate: \(String(describing: tokenExpirationDate))")
+						print("UserAuthVM-checkSignInStatus: clientID: \(String(describing: clientID))\n")
 				
 				let scopeStatus = checkAuthScope()
 				if !scopeStatus {
 					print("UserAuthVM-checkSignInStatus: User did not have scope, requesting it")
-					let scopeRequest = getAuthScope()
+					let scopeRequest = await getAuthScope()
 					if scopeRequest {
 						print("UserAuthVM-checkSignInStatus: Scope request succeeded")
 						self.isLoggedIn = true
@@ -104,20 +127,8 @@ import GoogleSignIn
 		}
 	}
 	
-	func restoreSignIn() {
-		
-		print("UserAuthVM-restoreSignIn: Starting restoreSignIn function")
-		
-		GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
-			if let error = error {
-				self.errorMessage = "error: \(error.localizedDescription)"
-				print("UserAuthVM-restoreSignIn: Could not restore SignIn \(self.errorMessage)")
-			} else {
-				print("UserAuthVM-restoreSignIn: Successfully restored previous signIn")
-				self.checkSignInStatus()
-			}
-		}
-	}
+	
+
 	
 	func checkAuthScope() -> Bool {
 		
@@ -139,40 +150,45 @@ import GoogleSignIn
 		}
 	}
 	
-	func getAuthScope( ) ->Bool {
-		var gotAuthScope: Bool = false
+	func getAuthScope() async -> Bool {
 		print("UserAuthVM-getAuthScope: Starting")
-		//   let additionalScopes = ["https://www.googleapis.com/auth/drive.readonly"]
+		
 		let additionalScopes = ["https://www.googleapis.com/auth/spreadsheets"]
-		//   let additionalScopes = ["https://www.googleapis.com/auth/spreadsheets"]
+		
 		guard let currentUser = GIDSignIn.sharedInstance.currentUser else {
 			print("UserAuthVM-getAuthScope: Not signed in")
-			return(gotAuthScope);  /* Not signed in. */
+			return false
 		}
-		guard let presentingViewController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.rootViewController else {
-			print("UserAuthVM-getAuthScope: No presenting window")
-			return(gotAuthScope)}
 		
-		currentUser.addScopes(additionalScopes, presenting: presentingViewController) { signInResult, error in
-			if let error = error  {
-				print("UserAuthVM-getAuthScope: Error requesting additional scopes: \(error.localizedDescription)")
-				self.isLoggedIn = false
-			} else {
-				print("UserAuthVM-getAuthScope: Additional scopes granted.")
-				self.isLoggedIn = true
-				gotAuthScope = true
-				if let grantedScopes = currentUser.grantedScopes {
-					print("UserAuthVM-getAuthScope: Granted scopes: \(grantedScopes)")
-				}
+		guard let presentingViewController = await UIApplication.shared.connectedScenes
+			.compactMap({ $0 as? UIWindowScene })
+			.first?.keyWindow?.rootViewController else {
+			print("UserAuthVM-getAuthScope: No presenting window")
+			return false
+		}
+		
+		do {
+			let signInResult = try await currentUser.addScopes(additionalScopes, presenting: presentingViewController)
+			print("UserAuthVM-getAuthScope: Additional scopes granted.")
+			
+			if let grantedScopes = signInResult.user.grantedScopes {
+				print("UserAuthVM-getAuthScope: Granted scopes: \(grantedScopes)")
 			}
 			
+			self.isLoggedIn = true
+			return true
+			
+		} catch {
+			print("UserAuthVM-getAuthScope: Error requesting additional scopes: \(error.localizedDescription)")
+			self.isLoggedIn = false
+			return false
 		}
-		return(gotAuthScope)
 	}
+
 	
 	func signOut() {
 		GIDSignIn.sharedInstance.signOut()
 		isLoggedIn = false
-//		self.checkStatus()
 	}
 }
+

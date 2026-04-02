@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 import GoogleSignIn
-import GoogleAPIClientForREST
 
 @Observable class TimesheetVM  {
     
@@ -93,7 +92,9 @@ import GoogleAPIClientForREST
 		return(loadTimesheetResult)
 	}
 	
-	func fetchTutorDataCounts(tutorName: String) async -> (Bool, Int, Int, Int, String){
+	// Get the counts of Students, Services and Notes assigned to the Tutor as well as the Tutor's Timesheet FileID
+	//
+	func fetchTutorDataCounts(tutorName: String) async -> (Bool, Int, Int, Int, String) {
 		var sheetCells = [[String]]()
 		var sheetData: SheetData?
 		var range: String
@@ -108,8 +109,25 @@ import GoogleAPIClientForREST
 		do {
 			range = tutorName + PgmConstants.tutorDataRange
 			
-//			try readSheetCellsSynch(fileID: tutorDetailsFileID, range: range )
-
+			let tutorDataRange = "!A2:B6"
+			let testRange = "Not A Real Tutor" + tutorDataRange
+			
+			if runMode == "PROD" {
+				tutorDetailsFileID = PgmConstants.tutorDetailsProdFileID
+			} else {
+				tutorDetailsFileID = PgmConstants.tutorDetailsTestFileID
+			}
+			
+			do {
+				print("About to do test read for Range \(testRange) and FileID \(tutorDetailsFileID)")
+				let sheetData = try await readSheetCells(fileID: tutorDetailsFileID, range: testRange )
+				print("Sheetdata: \(String(describing: sheetData))")
+			}
+			catch {
+				print("Test Read Sheet Cells Failed")
+			}
+			
+			let range = tutorName + tutorDataRange
 			sheetData = try await readSheetCells(fileID: tutorDetailsFileID, range: range )
 			
 			if let sheetData = sheetData {
@@ -119,6 +137,7 @@ import GoogleAPIClientForREST
 				studentCount = Int( sheetCells[2][1] ) ?? 0
 				serviceCount = Int( sheetCells[3][1] ) ?? 0
 				notesCount = Int( sheetCells[4][1] ) ?? 0
+				print("Data counts for \(tutorName): Students: \(studentCount), Services: \(serviceCount), Notes: \(notesCount)")
 			} else {
 				studentCount = 0
 				serviceCount = 0

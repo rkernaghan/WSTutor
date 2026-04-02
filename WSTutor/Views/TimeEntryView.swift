@@ -101,7 +101,8 @@ struct TimeEntryView: View {
 				formatter1.dateFormat = "M"
 				let currentMonth = formatter1.string(from: currentDate)
 				let currentMonthNum = Int(currentMonth)
-				let currentMonthName = PgmConstants.monthNames[currentMonthNum! - 1]
+//**				let currentMonthName = PgmConstants.monthNames[currentMonthNum! - 1]
+				let currentMonthName = PgmConstants.monthNames[2]
 				formatter1.dateFormat = "yyyy"
 				let currentYear = formatter1.string(from: currentDate)
 				let spreadsheetName = "Timesheet " + currentYear + " " + userName

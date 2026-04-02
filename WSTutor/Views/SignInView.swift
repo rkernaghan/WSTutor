@@ -39,17 +39,18 @@ struct SignInView: View {
 					Spacer()
 					
 					GoogleSignInButton(action: {
-//						Task {
-							userAuthVM.signIn()
-//							if userAuthVM.isLoggedIn {
-//						Task {
-//								let tutorNameFlag = await timesheetVM.checkTutorName(tutorName: userName)
-//								if !tutorNameFlag {
-//									showAlert = true
-//								}
-//							}
-//						}
-					})
+						//						Task {
+						Task {
+							await userAuthVM.signIn()
+							//							if userAuthVM.isLoggedIn {
+							//						Task {
+							//								let tutorNameFlag = await timesheetVM.checkTutorName(tutorName: userName)
+							//								if !tutorNameFlag {
+							//									showAlert = true
+							//								}
+							//							}
+							//						}
+						}})
 					.accessibilityIdentifier("GoogleSignInButton")
 					.accessibility(hint: Text("Sign in with Google button."))
 					.padding()

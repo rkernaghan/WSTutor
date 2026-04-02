@@ -108,6 +108,7 @@ var accessOAuthToken: String = ""
 var refreshOAuthToken: String = ""
 var clientOAuthID: String = ""
 var tokenExpiryTime: Date = Date.now
+
 var runMode = "PROD"
 var tutorDetailsFileID: String = ""
 
@@ -116,8 +117,6 @@ var tutorData = Tutor()
 
 @main
 struct WSTutorApp: App {
-//    @State var userAuth: UserAuthVM =  UserAuthVM()
-//    @State var timeSheet: TimesheetVM =  TimesheetVM()
     
     var body: some Scene {
         WindowGroup {

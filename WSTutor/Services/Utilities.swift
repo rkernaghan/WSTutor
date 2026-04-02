@@ -27,13 +27,13 @@ func getAccessToken() async -> (Bool) {
 				oauth2Token.expiresAt = newExpiryDate
 				print("New Token expires at \(oauth2Token.expiresAt!)")
 				oauth2Token.accessToken = newAccessToken
-				//				print("Access Token after refresh \(oauth2Token.accessToken!)")
-				//				print("Refresh Token after refresh \(oauth2Token.refreshToken!)")
+								print("Access Token after refresh \(oauth2Token.accessToken!)")
+								print("Refresh Token after refresh \(oauth2Token.refreshToken!)")
 			} catch {
 				print("Could not refresh access Token")
 			}
 		} else {
-			print("Utilities-getAccessToken: Access Token is not expired")
+//			print("Utilities-getAccessToken: Access Token is not expired")
 			returnResult = true
 		}
 	} else {
@@ -49,7 +49,7 @@ func isTokenExpired() -> Bool {
 	if let token = token {
 		let tokenExpiry = oauth2Token.expiresAt
 		if let tokenExpiry = tokenExpiry {
-			print("Checking token expiry - time: \(Date()) expires at: \(tokenExpiry)")
+//			print("Checking token expiry - time: \(Date()) expires at: \(tokenExpiry)")
 			if Date() >= tokenExpiry {
 				print("Token Time Expiry Test Failed")
 			} else {
@@ -122,7 +122,8 @@ func refreshAccessToken() async throws -> (Date?, String?) {
 }
 
 
-
+// Takes a File Name String and returns a success flag and the Google Drive File ID of the file (if found)
+//
 func getFileID(fileName: String) async throws -> (Bool, String) {
 	var fileID: String = ""
 	var fileFound: Bool = false
@@ -177,19 +178,23 @@ func getFileID(fileName: String) async throws -> (Bool, String) {
 	}
 }
 
+// readSheetCells - reads a range of cells from a Google Sheet
+//	Parameters:
+//		fileID: the Google Drive FileID of the spreadsheet
+//		range: the cell range to retrieve
+//	Returns:
+//		sheetData: an optional SheetData struct containing the retrieved cells in sheetdata.values
+//	Throws:
+//
 func readSheetCells(fileID: String, range: String) async throws -> SheetData? {
-	var values = [[String]]()
+//	var values = [[String]]()
 	var sheetData: SheetData?
-	
-	//	let currentUser = GIDSignIn.sharedInstance.currentUser
-	//	if let user = currentUser {
-	//		accessToken = user.accessToken.tokenString
-	print("Utilities-readSheetCells: Range:\(range)| FileID:\(fileID)")
 	
 	let tokenFound = await getAccessToken()
 	if tokenFound {
 		let accessToken = oauth2Token.accessToken
 		if let accessToken = accessToken {
+			print("readSheetCells - Access Token \(accessToken)")
 			// URL for Google Sheets API
 			let urlString = "https://sheets.googleapis.com/v4/spreadsheets/\(fileID)/values/\(range)"
 			guard let url = URL(string: urlString) else {
@@ -201,16 +206,13 @@ func readSheetCells(fileID: String, range: String) async throws -> SheetData? {
 			request.httpMethod = "GET"
 			request.addValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
 			
-//			print("Utilities-readSheetCells: Granted scopes: \(grantedScopes)")
-			
 			// Use async URLSession to fetch the data
 			//    print("Before Read Cells URL Session call \(fileID)")
 			let (data, response) = try await URLSession.shared.data(for: request)
-			
 			//    print("After Read Cells URL Session call \(fileID)")
 			if let httpResponse = response as? HTTPURLResponse {
 				if httpResponse.statusCode != 200 {
-					print("Read Sheet HTTP Result Error Code: \(httpResponse.statusCode)")
+					print("Read Sheet Cells HTTP Result Error Code: \(httpResponse.statusCode)")
 				}
 			}
 			// Check if the response is successful
@@ -220,7 +222,6 @@ func readSheetCells(fileID: String, range: String) async throws -> SheetData? {
 			
 			// Decode the JSON data into the SheetData structure
 			sheetData = try JSONDecoder().decode(SheetData.self, from: data)
-			print("Utilities-readSheetCells: Read range \(range)")
 		}
 		
 	}
@@ -229,6 +230,8 @@ func readSheetCells(fileID: String, range: String) async throws -> SheetData? {
 	//        }
 }
 
+//  ** This function is not used **
+//
 func readSheetCellsSynch(fileID: String, range: String) throws {
 	
 	print("\n Asynch read cells start")
@@ -394,6 +397,7 @@ struct GoogleSheetsResponse: Codable {
 	let sheets: [Sheet]
 }
 
+
 func getSheetCount(spreadsheetId: String) async throws -> Int {
 	var sheetCount: Int = 0
 	
@@ -403,8 +407,8 @@ func getSheetCount(spreadsheetId: String) async throws -> Int {
 	}
 	let tokenFound = await getAccessToken()
 	if tokenFound {
-		let accessToken = oauth2Token.accessToken
-		if let accessToken = accessToken {
+//		let accessToken = oauth2Token.accessToken
+//		if let accessToken = accessToken {
 			let accessToken = oauth2Token.accessToken
 			if let accessToken = accessToken {
 				var request = URLRequest(url: url)
@@ -424,13 +428,12 @@ func getSheetCount(spreadsheetId: String) async throws -> Int {
 				let googleSheetsResponse = try JSONDecoder().decode(GoogleSheetsResponse.self, from: data)
 				sheetCount = googleSheetsResponse.sheets.count
 			}
-		}
+//		}
 	}
 	// Return the count of sheets
 	return sheetCount
 	
 }
-
 
 
 func getCurrentMonthYear() -> (String, String) {
@@ -441,11 +444,14 @@ func getCurrentMonthYear() -> (String, String) {
 		currentMonthName = PgmConstants.monthNames[monthInt - 1]
 	}
 	
+	currentMonthName = PgmConstants.monthNames[2]
+	
 	if let yearInt = Calendar.current.dateComponents([.year], from: Date()).year {
 		currentYearName = String(yearInt)
 	}
 	return(currentMonthName, currentYearName)
 }
+
 
 func getPrevMonthYear() -> (String, String) {
 	var prevMonthName: String = ""
@@ -468,6 +474,7 @@ func getPrevMonthYear() -> (String, String) {
 	}
 	return(prevMonthName, billingYear)
 }
+
 
 func findPrevMonthYear(currentMonth: String, currentYear: String) -> (String, String) {
 	var prevMonthName: String = ""
